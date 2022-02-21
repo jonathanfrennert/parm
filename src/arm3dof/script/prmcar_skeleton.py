@@ -51,10 +51,10 @@ walls = (((xmin         , ymin        ), (xmax         , ymin        )),
 ddraw = 0.5
 
 # PRM parameters
-N = 800     # 200
-K = 50      # 40
-#N = 200
-#K = 40
+#N = 800     # 200
+#K = 50      # 40
+N = 200
+K = 40
 
 
 ######################################################################
@@ -712,7 +712,7 @@ def main():
     # Create the list of sample points.
     start = time.time()
     nodeList = []
-    AddNodesToList(nodeList, N)
+    AddNodesToListObj(nodeList, N)
     print('Sampling took ', time.time() - start)
 
     # # Show the sample states.
