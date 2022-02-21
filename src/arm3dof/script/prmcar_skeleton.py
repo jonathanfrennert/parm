@@ -53,6 +53,8 @@ ddraw = 0.5
 # PRM parameters
 N = 800     # 200
 K = 50      # 40
+#N = 200
+#K = 40
 
 
 ######################################################################
@@ -208,7 +210,7 @@ class Arc:
                          self.fromState.t)
         else:
             r   = wheelbase / self.tansteer
-            phi = d / r 
+            phi = d / r
             ds  = np.sin(self.fromState.t + phi) - self.fromState.s
             dc  = np.cos(self.fromState.t + phi) - self.fromState.c
             return State(self.fromState.x + r * ds,
@@ -299,28 +301,81 @@ class LocalPlan:
         # You should know
         wb = wheelbase
 
-        ....TODO....
-    
+        A = x1 - x2
+        B = s1 + s2
+        C = y1 - y2
+        D = c1 + c2
+
+        a = (B ** 2) + (D ** 2) - 4
+        b = 2 * (C * D - A * B)
+        c = A ** 2 + C ** 2
+
+        # discriminant
+        d = (b ** 2) - 4 * a * c
+
+        if (a == 0) and (b == 0):
+            invR = 0
+        elif a == 0:
+            R = - c / b
+            invR =  1 / R
+        else:
+            r1 = (- b + np.sqrt(d)) / (2 * a)
+            r2 = (- b - np.sqrt(d)) / (2 * a)
+
+            abs_steer1 = np.abs(np.arctan(wb/r1))
+            abs_steer2 = np.abs(np.arctan(wb/r2))
+
+            if (abs_steer1 > steermax) and (abs_steer2 <= steermax):
+                R = r2
+            elif (abs_steer2 > steermax) and (abs_steer1 <= steermax):
+                R = r1
+            else:
+                # both will be less than steermax (pick the largest steer angle)
+                if abs_steer1 < steermax and (abs_steer1 <= abs_steer2):
+                    if abs_steer1 <= abs_steer2:
+                        R = r2
+                    else:
+                        R = r1
+                elif abs_steer1 < steermax:
+                    R = r1
+                # both will be larger than steermax (pick the smallest steer angle (least violation))
+                else:
+                    if abs_steer1 <= abs_steer2:
+                        R = r1
+                    else:
+                        R = r2
+
+            invR = 1 / R
+
         # Check for zero steering (infinite radius).
-        if invR == 0:
+        if (invR == 0):
             # Straight line!
             tm = t1                     # Theta at mid point
             xm = 0.5*(x1+x2)            # X coordinate at mid point
             ym = 0.5*(y1+y2)            # Y coordinate at mid point
-            d1 = 0.5*np.sqrt(a)         # Distance on first arc
+            d1 = 0.5*np.sqrt(c)         # Distance on first arc
             d2 = d1                     # Distance on second arc
-
+            invR = 0
         else:
-            # Else use two arcs...  Note it may help to back up!!
-            tm = 
-            xm = 
-            ym = 
-            d1 = 
-            d2 = 
+            xA = x1 - R * s1
+            yA = y1 + R * c1
 
-        # Return the mid state and two arcs.  Again, you may choose
-        # differently, but the below is my approach.
-        .... CHECK THIS - DOES  IT MATCH YOUR APPROACH ...
+            xB = x2 + R * s2
+            yB = y2 - R * c2
+
+            xm = 0.5 * (xA + xB)
+            ym = 0.5 * (yA + yB)
+
+            dx = xB - xA
+            dy = yB - yA
+            if R > 0:
+                tm = np.arctan2(dx, -dy)
+            else:
+                tm = np.arctan2(-dx, dy)
+
+            d1 = AngleDiff(tm, t1) * R
+            d2 = AngleDiff(tm,t2) * R
+
         tansteer = invR * wheelbase
         midState = State(xm, ym, tm)
         arc1     = Arc(fromState, midState, d1,  tansteer)
@@ -484,6 +539,36 @@ def AddNodesToList(nodeList, N):
 
 
 #
+# Sample the space with focus on edge of objects
+#
+obj_checks = 10 # see AddNodesToListObj()
+(amin, amax) = (- np.pi / 4, np.pi / 4)
+def AddNodesToListObj(nodeList, N):
+    while (N > 0):
+        obj_state = State(random.uniform(xmin+5, xmax-5),
+                          random.uniform(ymin, ymax),
+                          random.uniform(amin, amax))
+        if not obj_state.InFreeSpace():
+            # if we find 1 free state close to the object state, we add it to
+            # our nodes. If we do not get anything in 10 tries, we give up on
+            # finding anything near that object state
+            Q = 1
+            num_tries = 0
+            while (Q > 0) and (num_tries < obj_checks):
+                r = random.gauss(wcar/4, 0.5)
+                phi = random.uniform(-np.pi, np.pi)
+                x = obj_state.x + r * np.cos(phi)
+                y = obj_state.y + r * np.sin(phi)
+                theta = random.uniform(amin, amax)
+                close_state = State(x, y, theta)
+                if close_state.InFreeSpace():
+                    nodeList.append(Node(close_state))
+                    Q -= 1
+                    N -= 1
+                num_tries += 1
+
+
+#
 #   Connect the nearest neighbors
 #
 def ConnectNearestNeighbors(nodeList, K):
@@ -502,7 +587,7 @@ def ConnectNearestNeighbors(nodeList, K):
     # Add the edges (from parent to child).  Ignore the first neighbor
     # being itself.
     for i, nbrs in enumerate(idx):
-        print(i)
+        #print(i)
         children = [child for (child,_) in nodeList[i].childrenandcosts]
         for n in nbrs[1:]:
             if not nodeList[n] in children:
@@ -532,13 +617,20 @@ def UniqueStates(path):
 
     # Return the full list.
     return states
-    
+
 def PostProcess(path):
     # Grab all states, including the intermediate states between arcs.
     states = UniqueStates(path)
-    
-    # Check whether we can skip states.
-    # .... TODO ... is there a shorter list that still works?
+
+    # Initialize the state list.
+    lazy_states = [states[0]]
+    for i in range(1, len(states)-1):
+        plan = LocalPlan(lazy_states[-1], states[i+1])
+        if not plan.Valid():
+            lazy_states.append(states[i])
+    lazy_states.append(states[-1])
+
+    states = lazy_states
 
     # Rebuild and return the path (list of nodes).
     return [Node(state) for state in states]
@@ -590,7 +682,7 @@ def DrawPath(path, fig, color, **kwargs):
     for (i, state) in enumerate(UniqueStates(path)):
         print(i, state)
 
-    
+
 def main():
     # Report the parameters.
     print('Running with ', N, ' nodes and ', K, ' neighbors.')
@@ -604,8 +696,8 @@ def main():
     # Switch to the road figure.
     fig.ClearFigure()
     fig.ShowParkingSpot()
-    
-        
+
+
     # Create the start/goal nodes.
     startnode = Node(State(startx, starty, startt))
     goalnode  = Node(State(goalx,  goaly,  goalt))
@@ -624,10 +716,10 @@ def main():
     print('Sampling took ', time.time() - start)
 
     # # Show the sample states.
-    # for node in nodeList:
-    #     node.state.Draw(fig, 'k', linewidth=1)
-    # fig.ShowFigure()
-    # input("Showing the nodes (hit return to continue)")
+    #for node in nodeList:
+    #    node.state.Draw(fig, 'k', linewidth=1)
+    #fig.ShowFigure()
+    #input("Showing the nodes (hit return to continue)")
 
     # Add the start/goal nodes.
     nodeList.append(startnode)

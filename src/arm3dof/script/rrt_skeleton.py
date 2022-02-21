@@ -27,6 +27,9 @@ triangles = ((( 2, 6), ( 3, 2), ( 4, 6)),
 (goalx,  goaly)  = (13, 5)
 
 dstep = 0.25
+#dstep = 0.5
+#dstep = 1
+dstep = 10
 Nmax  = 1000
 
 
@@ -88,7 +91,7 @@ class State:
 
     ############################################################
     # RRT Functions:
-    # Compute the relative distance to another state.    
+    # Compute the relative distance to another state.
     def DistSquared(self, other):
         return ((self.x - other.x)**2 + (self.y - other.y)**2)
 
@@ -143,7 +146,8 @@ def RRT(tree, goalstate, Nmax):
     # Loop.
     while True:
         # Determine the target state.
-        ... TODO ...
+        x = random.uniform(xmin, xmax)
+        y = random.uniform(ymin, ymax)
         targetstate = State(x,y)        # How to pick x/y?
 
         # Find the nearest node (node with state nearest the target state).
@@ -154,8 +158,9 @@ def RRT(tree, goalstate, Nmax):
         nearstate = nearnode.state
 
         # Determine the next state, a step size (dstep) away.
-        ... TODO ...
-        nextstate = ...
+        dx = targetstate.x - nearstate.x
+        dy = targetstate.y - nearstate.y
+        nextstate = State(nearstate.x + dstep * dx,  nearstate.y  + dstep * dy)
 
         # Check whether to attach (creating a new node).
         if nearstate.ConnectsTo(nextstate):
@@ -163,15 +168,53 @@ def RRT(tree, goalstate, Nmax):
             tree.append(nextnode)
 
             # Also try to connect the goal.
-            ... TODO ...
-            if .... :
-                ....
+
+            if  np.sqrt(nextstate.DistSquared(goalstate)) <= dstep:
+                goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
         # Check whether we should abort (tree has gotten too large).
         if (len(tree) >= Nmax):
             return None
 
+
+def targetRRT(tree, goalstate, Nmax):
+    # Loop.
+    while True:
+        # Determine the target state.
+        if random.uniform(0,1) < 0.05:
+            targetstate = goalstate
+        else:
+            x = random.uniform(xmin, xmax)
+            y = random.uniform(ymin, ymax)
+            targetstate = State(x,y)
+
+        # Find the nearest node (node with state nearest the target state).
+        # This is inefficient (slow for large trees), but simple.
+        list = [(node.state.DistSquared(targetstate), node) for node in tree]
+        (d2, nearnode)  = min(list)
+        d = np.sqrt(d2)
+        nearstate = nearnode.state
+
+        # Determine the next state, a step size (dstep) away.
+        dx = targetstate.x - nearstate.x
+        dy = targetstate.y - nearstate.y
+        nextstate = State(nearstate.x + dstep * dx,  nearstate.y  + dstep * dy)
+
+        # Check whether to attach (creating a new node).
+        if nearstate.ConnectsTo(nextstate):
+            nextnode = Node(nextstate, nearnode)
+            tree.append(nextnode)
+
+            # Also try to connect the goal.
+
+            if  np.sqrt(nextstate.DistSquared(goalstate)) <= dstep:
+                goalnode = Node(goalstate, nextnode)
+                return(goalnode)
+
+        # Check whether we should abort (tree has gotten too large).
+        if (len(tree) >= Nmax):
+            return None
 
 ######################################################################
 #
@@ -188,7 +231,7 @@ def main():
     # Set up the start/goal states.
     startstate = State(startx, starty)
     goalstate  = State(goalx,  goaly)
-    
+
     # Show the start/goal states.
     startstate.Draw('ro')
     goalstate.Draw('ro')
@@ -200,14 +243,14 @@ def main():
     tree = [Node(startstate, None)]
 
     # Execute the search (return the goal leaf node).
-    node = RRT(tree, goalstate, Nmax)
+    node = targetRRT(tree, goalstate, Nmax)
 
     # Check the outcome
     if node is None:
         print("UNABLE TO FIND A PATH in %d steps", Nmax)
         input("(hit return to exit)")
         return
-    
+
     # Show the path.
     while node.parent is not None:
         node.Draw('b-', linewidth=2)
