@@ -89,6 +89,7 @@ class State:
             for j in range(i+1, len(self.bs)):
                 if box_cross_box(self.bs[i], self.bs[j]):
                     return True
+        return False
 
 
     def obstacleCross(self):
@@ -96,9 +97,10 @@ class State:
             for j in range(len(self.obstacles)):
                 if box_cross_box(self.bs[i], self.obstacles[j]):
                     return True
+        return False
 
-    # Compute the relative distance to another state.  Scale the
-    # angular error by the car length.
+
+    # Compute the relative distance to another state.
     def Distance(self, other):
         return np.sqrt(np.power(AngleDiff(self.ts, other.ts), 2).sum())
 
