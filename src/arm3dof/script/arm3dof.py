@@ -11,6 +11,7 @@ import time
 from sklearn.neighbors import KDTree
 
 from fkin import fkin
+from arm_link_boxes import arm_link_boxes
 
 
 ######################################################################
@@ -56,16 +57,14 @@ Nmax  = 1000
 #
 class State:
     def __init__(self, ts):
-        # Pre-compute the trigonometry.
-
-        # joint
+        # joints
         self.ts = ts
-        self.cs = np.cos(ts)
-        self.ss = np.sin(ts)
+        self.cs = np.cos(ts) # precompute
+        self.ss = np.sin(ts) # precompute
 
-        # link
+        # links
         self.ps = fkin(ls, ts, self.cs, self.ss)
-        self.bs = arm_link_boxes(ls, ts, self.ps)
+        # self.bs = arm_link_boxes() TODO
 
 
     ############################################################
@@ -77,11 +76,6 @@ class State:
             repr_str += f'T{i} {t * (180/np.pi):5.1f} deg - '
         return repr_str + '>'
 
-    # Draw where the state is:
-    #def Draw(self, *args, **kwargs):
-    #    plt.plot(self.x, self.y, *args, **kwargs)
-    #    plt.pause(0.001)
-
 
     ############################################################
     # PRM Functions:
@@ -92,23 +86,25 @@ class State:
 
     def bodyCross(self):
         for i in range(len(self.bs)):
-            for j in range(i+1, len(self.bs))):
+            for j in range(i+1, len(self.bs)):
                 if box_cross_box(self.bs[i], self.bs[j]):
                     return True
 
 
     def obstacleCross(self):
         for i in range(len(self.bs)):
-            for j in range(len(self.obstacles))):
+            for j in range(len(self.obstacles)):
                 if box_cross_box(self.bs[i], self.obstacles[j]):
                     return True
 
     # Compute the relative distance to another state.  Scale the
     # angular error by the car length.
-    #def Distance(self, other):
-    #    return np.sqrt((self.x - other.x)**2 +
-    #                   (self.y - other.y)**2 +
-    #                   (wheelbase*AngleDiff(self.t, other.t))**2)
+    def Distance(self, other):
+        return np.sqrt(np.power(AngleDiff(self.ts, other.ts), 2).sum())
+
+
+def AngleDiff(t1, t2):
+    return (t1-t2) - 2.0*np.pi * np.round(0.5*(t1-t2)/np.pi)
 
 
     ############################################################
@@ -141,6 +137,8 @@ def main():
     #goalNode  = Node(State(goalts))
     print(State(startts))
     print(State(goalts))
+    print(State(startts).Distance(State(goalts)))
+
 
     # Show the start/goal states.
     #startnode.state.Draw(fig, 'r', linewidth=2)
