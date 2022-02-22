@@ -64,14 +64,10 @@
   <material name="green">    <color rgba="0.00 1.00 0.00 1"/>  </material>
   <material name="blue">     <color rgba="0.00 0.00 1.00 1"/>  </material>
 
-  <material name="cyan">     <color rgba="0.00 1.00 1.00 1"/>  </material>
-  <material name="magenta">  <color rgba="1.00 0.00 1.00 1"/>  </material>
-  <material name="yellow">   <color rgba="1.00 1.00 0.00 1"/>  </material>
-
-  <material name="orange">   <color rgba="1.00 0.65 0.00 1"/>  </material>
+  <material name="magenta">  <color rgba="1.00 0.00 1.00 0.25"/>  </material>
 
 
-  <!-- *** Table - attached to world *** -->
+  <!-- *** Table - attached to world ***
 
   <joint name="attach-table" type="fixed">
     <parent link="world"/>
@@ -87,6 +83,8 @@
       <material name="table"/>
     </visual>
   </link>
+
+  -->
 
   <!-- *** Yaw Motor - attached to world *** -->
 
@@ -186,26 +184,124 @@
     <!-- ********************* Obstacles ******************* -->
     <!-- *************************************************** -->
 
-    <joint name="attach-wall" type="fixed">
+    <joint name="attach-bound" type="fixed">
       <parent link="world"/>
-      <child  link="wall"/>
+      <child  link="bound"/>
     </joint>
-    <link name="wall">
+    <link name="bound">
       <visual>
-        <origin          xyz="0.00 1 0.25" rpy="0 0 0"/>
-        <geometry> <box size="0.02 0.60 0.50"/> </geometry>
+        <origin          xyz="0.0 0.0 1" rpy="0 0 0"/>
+        <geometry> <box size="4 4 2"/> </geometry>
         <material name="magenta"/>
       </visual>
       <collision>
-        <origin          xyz="0.00 0.50 0.25" rpy="0 0 0"/>
-        <geometry> <box size="0.02 0.60 0.50"/> </geometry>
+        <origin          xyz="0.0 0.0 1" rpy="0 0 0"/>
+        <geometry> <box size="4 4 2"/> </geometry>
       </collision>
     </link>
 
-    <!-- *************************************************** -->
-    <!-- ******************* Gazebo Colors ***************** -->
-    <!-- *************************************************** -->
 
-    <gazebo reference="wall">      <material>Gazebo/Magenta</material></gazebo>
+    <!--<joint name="attach-bottom_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="bottom_wall"/>
+    </joint>
+    <link name="bottom_wall">
+      <visual>
+        <origin          xyz="0 0 0" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 0 0" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-top_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="top_wall"/>
+    </joint>
+    <link name="top_wall">
+      <visual>
+        <origin          xyz="0 0 2" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 0 2" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-x_pos_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="x_pos_wall"/>
+    </joint>
+    <link name="x_pos_wall">
+      <visual>
+        <origin          xyz="2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-x_neg_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="x_neg_wall"/>
+    </joint>
+    <link name="x_neg_wall">
+      <visual>
+        <origin          xyz="-2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-y_pos_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="y_pos_wall"/>
+    </joint>
+    <link name="y_pos_wall">
+      <visual>
+        <origin          xyz="0 2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-y_neg_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="y_neg_wall"/>
+    </joint>
+    <link name="y_neg_wall">
+      <visual>
+        <origin          xyz="0 -2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 -2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+      </collision>
+    </link>
+    -->
+
 
 </robot>
