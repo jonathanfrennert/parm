@@ -10,6 +10,8 @@ import time
 
 from sklearn.neighbors import KDTree
 
+from fkin import fkin
+
 
 ######################################################################
 #
@@ -55,10 +57,15 @@ Nmax  = 1000
 class State:
     def __init__(self, ts):
         # Pre-compute the trigonometry.
+
+        # joint
         self.ts = ts
         self.cs = np.cos(ts)
         self.ss = np.sin(ts)
-        self.ps = fkin(ts, cs, ss)
+
+        # link
+        self.ps = fkin(ls, ts, self.cs, self.ss)
+        self.bs = arm_link_boxes(ls, ts, self.ps)
 
 
     ############################################################
@@ -79,11 +86,22 @@ class State:
     ############################################################
     # PRM Functions:
     # Check whether in free space.
-    #def InFreeSpace(self):
-    #    for wall in walls:
-    #        if SegmentCrossBox(wall, self.box):
-    #            return False
-    #    return True
+    def InFreeSpace(self):
+        return not (self.bodyCross() or self.obstacleCross())
+
+
+    def bodyCross(self):
+        for i in range(len(self.bs)):
+            for j in range(i+1, len(self.bs))):
+                if box_cross_box(self.bs[i], self.bs[j]):
+                    return True
+
+
+    def obstacleCross(self):
+        for i in range(len(self.bs)):
+            for j in range(len(self.obstacles))):
+                if box_cross_box(self.bs[i], self.obstacles[j]):
+                    return True
 
     # Compute the relative distance to another state.  Scale the
     # angular error by the car length.

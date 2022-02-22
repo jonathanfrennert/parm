@@ -14,7 +14,7 @@ def fkin(ls, ts, cs, ss):
 
     # Get r, l for third bar
     r += ls[2] * np.cos(ts[1] + ts[2])
-    z += ls[2] * np.sin(ts[1].+ ts[2])
+    z += ls[2] * np.sin(ts[1] + ts[2])
 
     # End effector
     p3 = np.array([- r * ss[0], r * cs[0], z])
