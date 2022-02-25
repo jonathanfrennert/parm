@@ -1,11 +1,8 @@
 import numpy as np
 
-'''
-    Given a line AB and a point C, return the minimum distance
+''' Given a line AB and a point C, return the minimum distance
     between both objects.
-
     point_A, point_B, point_C each given by [3 x 1] numpy array
-
 '''
 def distLineAndPoint(point_A, point_B, point_C):
     # Convert to horizontal
@@ -40,8 +37,7 @@ def distLineAndPoint(point_A, point_B, point_C):
         # Distance between C and B
         return np.linalg.norm(C - B)
 
-'''
-    Check whether a line given by points A and B intersects a
+''' Check whether a line given by points A and B intersects a
     sphere centered at point C. Return True upon intersection
     and False otherwise.
 '''
