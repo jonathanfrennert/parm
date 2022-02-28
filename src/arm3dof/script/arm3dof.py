@@ -2,16 +2,13 @@
 #
 #   arm3dof.py
 #
-import bisect
-import matplotlib.pyplot as plt
+import math
 import numpy as np
 import random
 import time
 
 from sklearn.neighbors import KDTree
-
-from fkin import fkin
-from arm_link_boxes import arm_link_boxes
+from prmtools import *
 
 
 ######################################################################
@@ -19,10 +16,9 @@ from arm_link_boxes import arm_link_boxes
 #   World
 #   List of objects, start, goal, and parameters.
 #
-ls = np.array([0.0, 1.0, 1.0]) # arm link lengths
-L  = ls.sum()
+amin, amax = -np.pi , np.pi
 
-
+# old way with planes and boxes
 # Construct the walls (boxes) (x, y, z, roll, pitch, yaw, length, width, height).
 #floor      = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
 #ceiling    = np.array([0.0, 0.0, L, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
@@ -31,20 +27,27 @@ L  = ls.sum()
 #y_pos_wall = np.array([0, L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
 #y_neg_wall = np.array([0, -L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
 
-# Construct the sphere (x, y, z, radius).
-sphere = np.array([1.65, 0.0, 0.3, 0.3])
-
 #obstacles = [floor, ceiling, sphere,
 #             x_pos_wall, x_neg_wall,
 #             y_pos_wall, y_neg_wall]
 
 
+# arm link lengths
+ls = np.array([0.0, 1.0, 1.0])
+L  = ls.sum()
+
+# radius of arm links
+R = 0.1
+
+
+# Construct the sphere (x, y, z, radius).
+sphere = np.array([1.65, 0.0, 0.3, 0.3])
+obstacles = [sphere]
+
+
 # Pick your start and goal locations (in radians).
 startts = np.array([0.0, 0.0, 0.0])
 goalts  = np.array([1.16, 2.36, 1.49])
-
-amin, amax = -np.pi , np.pi
-
 
 
 # Number of checks with intermediate states for ConnectsTo
@@ -100,7 +103,7 @@ class State:
     def bodyCross(self):
         for i in range(len(self.ls)):
             for j in range(i+1, len(self.ls)):
-                if line_cross_line(self.ls[i], self.ls[j]):
+                if line_to_line(self.ls[i], self.ls[j]):
                     return True
         return False
 
@@ -108,7 +111,7 @@ class State:
     def obstacleCross(self):
         for i in range(len(self.ls)):
             for j in range(len(obstacles)):
-                if line_cross_sphere(self.ls[i], obstacles[j]):
+                if lineInSphere(self.ls[i], obstacles[j]):
                     return True
         return False
 
@@ -214,14 +217,18 @@ def PostProcess(path):
     return lazy_path
 
 
+######################################################################
+#
+#  Main Code
+#
 def main():
     # Report the parameters.
     print('Running with ', N, ' nodes and ', K, ' neighbors.')
 
 
     # Create the start/goal nodes.
-    #startnode = Node(State(startts))
-    #goalNode  = Node(State(goalts))
+    startnode = Node(State(startts))
+    goalNode  = Node(State(goalts))
     print(State(startts))
     print(State(goalts))
     print(State(startts).Distance(State(goalts)))
