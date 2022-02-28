@@ -1,10 +1,13 @@
 import numpy as np
 
+''' Given horizontal coordinates for two lines,
+    output shortest distances.
+'''
 def distLineSegments(A1, B1, A2, B2):
-    p1 = A1.T
-    p2 = B1.T
-    q1 = A2.T
-    q2 = B2.T
+    p1 = A1
+    p2 = B1
+    q1 = A2
+    q2 = B2
 
     P = p2 - p1
     Q = q2 - q1
