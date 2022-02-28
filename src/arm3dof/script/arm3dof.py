@@ -24,19 +24,19 @@ L  = ls.sum()
 
 
 # Construct the walls (boxes) (x, y, z, roll, pitch, yaw, length, width, height).
-floor      = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
-ceiling    = np.array([0.0, 0.0, L, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
-x_pos_wall = np.array([L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
-x_neg_wall = np.array([-L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
-y_pos_wall = np.array([0, L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
-y_neg_wall = np.array([0, -L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
+#floor      = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
+#ceiling    = np.array([0.0, 0.0, L, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
+#x_pos_wall = np.array([L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
+#x_neg_wall = np.array([-L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
+#y_pos_wall = np.array([0, L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
+#y_neg_wall = np.array([0, -L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
 
 # Construct the sphere (x, y, z, radius).
 sphere = np.array([1.65, 0.0, 0.3, 0.3])
 
-obstacles = [floor, ceiling, sphere,
-             x_pos_wall, x_neg_wall,
-             y_pos_wall, y_neg_wall]
+#obstacles = [floor, ceiling, sphere,
+#             x_pos_wall, x_neg_wall,
+#             y_pos_wall, y_neg_wall]
 
 
 # Pick your start and goal locations (in radians).
@@ -141,7 +141,7 @@ class State:
 #
 def AddNodesToList(nodeList, N):
     while (N > 0):
-        state = State(random.uniform(xmin, xmax),
+        state = State(random.uniform(amin, amax),
                       random.uniform(ymin, ymax),
                       random.uniform(amin, amax))
         if state.InFreespace():
