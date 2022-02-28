@@ -31,7 +31,10 @@ x_neg_wall = np.array([-L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
 y_pos_wall = np.array([0, L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
 y_neg_wall = np.array([0, -L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
 
-obstacles = [floor, ceiling,
+# Construct the sphere (x, y, z, radius).
+sphere = np.array([1.65, 0.0, 0.3, 0.3])
+
+obstacles = [floor, ceiling, sphere,
              x_pos_wall, x_neg_wall,
              y_pos_wall, y_neg_wall]
 
