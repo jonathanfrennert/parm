@@ -102,7 +102,7 @@ class State:
 
     def bodyCross(self):
         for i in range(len(self.ls)):
-            for j in range(i+1, len(self.ls)):
+            for j in range(i+2, len(self.ls)):
                 if line_to_line(self.ls[i], self.ls[j]):
                     return True
         return False
@@ -129,7 +129,7 @@ class State:
     # Check the local planner - whether this connects to another state.
     def ConnectsTo(self, other):
         for alpha in range(1, ALPHAS):
-            intermediate = self.Intermediate(other, alpha / connect_checks)
+            intermediate = self.Intermediate(other, alpha / CONNECT_CHECKS)
             if not intermediate.inFreeSpace():
                 return False
         return True
