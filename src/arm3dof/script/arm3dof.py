@@ -151,9 +151,7 @@ def AddNodesToList(nodeList, N):
             nodeList.append(Node(state))
             N = N-1
 
-#
-# Sample the space with focus on edge of objects
-#
+
 #
 #   Connect the nearest neighbors
 #
@@ -203,70 +201,36 @@ def main():
     # Create the start/goal nodes.
     startnode = Node(State(startts))
     goalNode  = Node(State(goalts))
-    print(State(startts))
-    print(State(goalts))
-    print(State(startts).Distance(State(goalts)))
-
-
-    # Show the start/goal states.
-    #startnode.state.Draw(fig, 'r', linewidth=2)
-    #goalnode.state.Draw(fig,  'r', linewidth=2)
-    #fig.ShowFigure()
-    #input("Showing basic world (hit return to continue)")
 
 
     # Create the list of sample points.
-    #start = time.time()
+    start = time.time()
     nodeList = []
-    #AddNodesToListObj(nodeList, N)
-    #print('Sampling took ', time.time() - start)
+    AddNodesToList(nodeList, N)
+    print('Sampling took ', time.time() - start)
 
-    # # Show the sample states.
-    #for node in nodeList:
-    #    node.state.Draw(fig, 'k', linewidth=1)
-    #fig.ShowFigure()
-    #input("Showing the nodes (hit return to continue)")
 
     # Add the start/goal nodes.
-    #nodeList.append(startnode)
-    #nodeList.append(goalnode)
+    nodeList.append(startnode)
+    nodeList.append(goalnode)
 
 
     # Connect to the nearest neighbors.
-    #start = time.time()
-    #ConnectNearestNeighbors(nodeList, K)
-    #print('Connecting took ', time.time() - start)
-
-    # # Show the neighbor connections.
-    # for node in nodeList:
-    #     for child in node.children:
-    #         plan = LocalPlan(node.state, child.state)
-    #         plan.Draw(fig, 'g-', linewidth=0.5)
-    # fig.ShowFigure()
-    # input("Showing the full graph (hit return to continue)")
+    start = time.time()
+    ConnectNearestNeighbors(nodeList, K)
+    print('Connecting took ', time.time() - start)
 
 
     # Run the A* planner.
-    #start = time.time()
-    #path = AStar(nodeList, startnode, goalnode)
-    #print('A* took ', time.time() - start)
-    #if not path:
-    #    print("UNABLE TO FIND A PATH")
-    #    return
-
-
-    # Show the path.
-    #DrawPath(path, fig, 'r', linewidth=1)
-    #fig.ShowFigure()
-    #input("Showing the raw path (hit return to continue)")
+    start = time.time()
+    path = AStar(nodeList, startnode, goalnode)
+    print('A* took ', time.time() - start)
+    if not path:
+        print("UNABLE TO FIND A PATH")
+        return
 
     # Post Process the path.
     #path = PostProcess(path)
-
-    # Show the post-processed path.
-    #DrawPath(path, fig, 'b', linewidth=2)
-    #fig.ShowFigure()
-    #input("Showing the post-processed path (hit return to continue)")
 
 
 if __name__== "__main__":
