@@ -117,7 +117,7 @@ class State:
     def obstacleCross(self):
         for i in range(len(self.ls)):
             for j in range(len(obstacles)):
-                if lineInSphere(self.ls[i], obstacles[j]):
+                if segInSphere(self.ls[i], obstacles[j]):
                     return True
         return False
 
