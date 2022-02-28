@@ -78,7 +78,13 @@ class State:
 
         # links
         self.ps = fkin(ls, ts, self.cs, self.ss)
-        # self.ls = arm_link_boxes() TODO
+    
+        segments = []
+        for i in range(len(self.ps)) - 1:
+            seg = np.hstack(self.ps[i],self.ps[i+1])    
+            seg = np.hstack(seg, R) # [1 x 7]
+            segments.append(seg)
+        self.segments = segments
 
 
     ############################################################
@@ -111,7 +117,7 @@ class State:
     def obstacleCross(self):
         for i in range(len(self.ls)):
             for j in range(len(obstacles)):
-                if lineInSphere(self.ls[i], obstacles[j]):
+                if segInSphere(self.ls[i], obstacles[j]):
                     return True
         return False
 
@@ -133,7 +139,6 @@ class State:
             if not intermediate.inFreeSpace():
                 return False
         return True
-
 
 ######################################################################
 #
