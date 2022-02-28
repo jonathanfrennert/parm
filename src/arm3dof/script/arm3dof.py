@@ -24,21 +24,32 @@ L  = ls.sum()
 
 
 # Construct the walls (boxes) (x, y, z, roll, pitch, yaw, length, width, height).
-floor      = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
-ceiling    = np.array([0.0, 0.0, L, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
-x_pos_wall = np.array([L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
-x_neg_wall = np.array([-L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
-y_pos_wall = np.array([0, L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
-y_neg_wall = np.array([0, -L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
+#floor      = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
+#ceiling    = np.array([0.0, 0.0, L, 0.0, 0.0, 0.0, 2*L, 2*L, 0.0])
+#x_pos_wall = np.array([L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
+#x_neg_wall = np.array([-L, 0.0, L/2, 0.0, 0.0, 0.0, 0.0, 2*L, L])
+#y_pos_wall = np.array([0, L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
+#y_neg_wall = np.array([0, -L, L/2, 0.0, 0.0, 0.0, 2*L, 0.0, L])
 
-obstacles = [floor, ceiling,
-             x_pos_wall, x_neg_wall,
-             y_pos_wall, y_neg_wall]
+# Construct the sphere (x, y, z, radius).
+sphere = np.array([1.65, 0.0, 0.3, 0.3])
+
+#obstacles = [floor, ceiling, sphere,
+#             x_pos_wall, x_neg_wall,
+#             y_pos_wall, y_neg_wall]
 
 
 # Pick your start and goal locations (in radians).
 startts = np.array([0.0, 0.0, 0.0])
-goalts  = np.array([1.16, 2.36, -1.49])
+goalts  = np.array([1.16, 2.36, 1.49])
+
+amin, amax = -np.pi , np.pi
+
+
+
+# Number of checks with intermediate states for ConnectsTo
+CONNECT_CHECKS = 5
+ALPHAS = CONNECT_CHECKS + 2 # actuall used in ConnectsTo
 
 
 # PRM default parameters
@@ -64,7 +75,7 @@ class State:
 
         # links
         self.ps = fkin(ls, ts, self.cs, self.ss)
-        # self.bs = arm_link_boxes() TODO
+        # self.ls = arm_link_boxes() TODO
 
 
     ############################################################
@@ -77,56 +88,130 @@ class State:
         return repr_str + '>'
 
 
-    ############################################################
-    # PRM Functions:
-    # Check whether in free space.
+    # Return a tuple of the coordinates for KDTree.
+    def Coordinates(self):
+        return tuple(self.ps)
+
+
     def InFreeSpace(self):
         return not (self.bodyCross() or self.obstacleCross())
 
 
     def bodyCross(self):
-        for i in range(len(self.bs)):
-            for j in range(i+1, len(self.bs)):
-                if box_cross_box(self.bs[i], self.bs[j]):
+        for i in range(len(self.ls)):
+            for j in range(i+1, len(self.ls)):
+                if line_cross_line(self.ls[i], self.ls[j]):
                     return True
         return False
 
 
     def obstacleCross(self):
-        for i in range(len(self.bs)):
-            for j in range(len(self.obstacles)):
-                if box_cross_box(self.bs[i], self.obstacles[j]):
+        for i in range(len(self.ls)):
+            for j in range(len(obstacles)):
+                if line_cross_sphere(self.ls[i], obstacles[j]):
                     return True
         return False
 
 
-    # Compute the relative distance to another state.
     def Distance(self, other):
-        return np.sqrt(np.power(AngleDiff(self.ts, other.ts), 2).sum())
+        return np.sqrt(np.power(np.abs(other.ts - self.ts), 2).sum())
 
-
-def AngleDiff(t1, t2):
-    return (t1-t2) - 2.0*np.pi * np.round(0.5*(t1-t2)/np.pi)
-
-
-    ############################################################
-    # RRT Functions:
-    # Compute the relative distance to another state.
-    #def DistSquared(self, other):
-    #    return ((self.x - other.x)**2 + (self.y - other.y)**2)
 
     # Compute/create an intermediate state.
-    #def Intermediate(self, other, alpha):
-    #    return State(self.x + alpha * (other.x - self.x),
-    #                 self.y + alpha * (other.y - self.y))
+    def Intermediate(self, other, alpha):
+        ts = self.ts + alpha * (other.ts - self.ts)
+        return State(ts)
+
 
     # Check the local planner - whether this connects to another state.
-    #def ConnectsTo(self, other):
-    #    for triangle in triangles:
-    #        if SegmentCrossTriangle(((self.x, self.y), (other.x, other.y)),
-    #                                triangle):
-    #            return False
-    #    return True
+    def ConnectsTo(self, other):
+        for alpha in range(1, ALPHAS):
+            intermediate = self.Intermediate(other, alpha / connect_checks)
+            if not intermediate.inFreeSpace():
+                return False
+        return True
+
+
+######################################################################
+#
+#   PRM Functions
+#
+#
+# Sample the space uniformly
+#
+def AddNodesToList(nodeList, N):
+    while (N > 0):
+        state = State(random.uniform(amin, amax),
+                      random.uniform(ymin, ymax),
+                      random.uniform(amin, amax))
+        if state.InFreespace():
+            nodeList.append(Node(state))
+            N = N-1
+
+
+#
+# Sample the space with focus on edge of objects
+#
+def AddNodesToListObj(nodeList, N):
+    while (N > 0):
+        obj_state = State(random.uniform(xmin, xmax),
+                          random.uniform(ymin, ymax),
+                          random.uniform(amin, amax))
+        if not obj_state.InFreespace():
+            # if we find 1 free state close to the object state, we add it to
+            # our nodes. If we do not get anything in 10 tries, we give up on
+            # finding anything near that object state
+            Q = 1
+            num_tries = 0
+            while (Q > 0) and (num_tries < obj_checks):
+                r = random.gauss(2*D, 1)
+                phi = random.uniform(amin, amax)
+                x = obj_state.x + r * np.cos(phi)
+                y = obj_state.y + r * np.sin(phi)
+                theta = random.uniform(amin, amax)
+                close_state = State(x, y, theta)
+                if close_state.InFreespace():
+                    nodeList.append(Node(close_state))
+                    Q -= 1
+                    N -= 1
+                num_tries += 1
+
+
+#
+#   Connect the nearest neighbors
+#
+def ConnectNearestNeighbors(nodeList, K):
+    # Clear any existing neighbors.
+    for node in nodeList:
+        node.children = []
+        node.parents  = []
+
+    # Determine the indices for the nearest neighbors.  This also
+    # reports the node itself as the closest neighbor, so add one
+    # extra here and ignore the first element below.
+    X   = np.array([node.state.Coordinates() for node in nodeList])
+    kdt = KDTree(X)
+    idx = kdt.query(X, k=(K+1), return_distance=False)
+
+    # Add the edges (from parent to child).  Ignore the first neighbor
+    # being itself.
+    for i, nbrs in enumerate(idx):
+        for n in nbrs[1:]:
+            if nodeList[i].state.ConnectsTo(nodeList[n].state):
+                nodeList[i].children.append(nodeList[n])
+                nodeList[n].parents.append(nodeList[i])
+
+
+#
+#  Post Process the Path
+#
+def PostProcess(path):
+    lazy_path = [path[0]]
+    for i in range(1, len(path)-1):
+        if not lazy_path[-1].state.ConnectsTo(path[i+1].state):
+            lazy_path.append(path[i])
+    lazy_path.append(path[-1])
+    return lazy_path
 
 
 def main():
