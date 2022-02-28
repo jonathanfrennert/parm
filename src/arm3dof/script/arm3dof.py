@@ -141,42 +141,16 @@ class State:
 #
 def AddNodesToList(nodeList, N):
     while (N > 0):
-        state = State(random.uniform(amin, amax),
-                      random.uniform(ymin, ymax),
-                      random.uniform(amin, amax))
+        state = State(np.array([random.uniform(amin, amax),
+                      random.uniform(amin, amax),
+                      random.uniform(amin, amax)]))
         if state.InFreespace():
             nodeList.append(Node(state))
             N = N-1
 
-
 #
 # Sample the space with focus on edge of objects
 #
-def AddNodesToListObj(nodeList, N):
-    while (N > 0):
-        obj_state = State(random.uniform(xmin, xmax),
-                          random.uniform(ymin, ymax),
-                          random.uniform(amin, amax))
-        if not obj_state.InFreespace():
-            # if we find 1 free state close to the object state, we add it to
-            # our nodes. If we do not get anything in 10 tries, we give up on
-            # finding anything near that object state
-            Q = 1
-            num_tries = 0
-            while (Q > 0) and (num_tries < obj_checks):
-                r = random.gauss(2*D, 1)
-                phi = random.uniform(amin, amax)
-                x = obj_state.x + r * np.cos(phi)
-                y = obj_state.y + r * np.sin(phi)
-                theta = random.uniform(amin, amax)
-                close_state = State(x, y, theta)
-                if close_state.InFreespace():
-                    nodeList.append(Node(close_state))
-                    Q -= 1
-                    N -= 1
-                num_tries += 1
-
-
 #
 #   Connect the nearest neighbors
 #
