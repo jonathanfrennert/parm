@@ -7,6 +7,11 @@ import numpy as np
 import random
 import time
 
+from fkin import fkin
+from segInSphere import segInSphere
+
+
+
 from sklearn.neighbors import KDTree
 from prmtools import *
 
@@ -78,11 +83,11 @@ class State:
 
         # links
         self.ps = fkin(ls, ts, self.cs, self.ss)
-    
+
         segments = []
-        for i in range(len(self.ps)) - 1:
-            seg = np.hstack(self.ps[i],self.ps[i+1])    
-            seg = np.hstack(seg, R) # [1 x 7]
+        for i in range(len(self.ps)- 1):
+            seg = np.hstack((self.ps[i],self.ps[i+1]))
+            seg = np.hstack((seg, R)) # [1 x 7]
             segments.append(seg)
         self.segments = segments
 
@@ -99,7 +104,7 @@ class State:
 
     # Return a tuple of the coordinates for KDTree.
     def Coordinates(self):
-        return tuple(self.ps)
+        return self.ps
 
 
     def InFreeSpace(self):
@@ -107,17 +112,17 @@ class State:
 
 
     def bodyCross(self):
-        for i in range(len(self.ls)):
-            for j in range(i+2, len(self.ls)):
-                if line_to_line(self.ls[i], self.ls[j]):
+        for i in range(len(self.segments)):
+            for j in range(i+2, len(self.segments)):
+                if line_to_line(self.segments[i], self.segments[j]):
                     return True
         return False
 
 
     def obstacleCross(self):
-        for i in range(len(self.ls)):
-            for j in range(len(obstacles)):
-                if segInSphere(self.ls[i], obstacles[j]):
+        for i in range(len(self.segments)):
+            for j in range(len(obstacles))  :
+                if segInSphere(self.segments[i], obstacles[j]):
                     return True
         return False
 
@@ -136,7 +141,7 @@ class State:
     def ConnectsTo(self, other):
         for alpha in range(1, ALPHAS):
             intermediate = self.Intermediate(other, alpha / CONNECT_CHECKS)
-            if not intermediate.inFreeSpace():
+            if not intermediate.InFreeSpace():
                 return False
         return True
 
@@ -152,7 +157,7 @@ def AddNodesToList(nodeList, N):
         state = State(np.array([random.uniform(amin, amax),
                       random.uniform(amin, amax),
                       random.uniform(amin, amax)]))
-        if state.InFreespace():
+        if state.InFreeSpace():
             nodeList.append(Node(state))
             N = N-1
 
@@ -169,7 +174,7 @@ def ConnectNearestNeighbors(nodeList, K):
     # Determine the indices for the nearest neighbors.  This also
     # reports the node itself as the closest neighbor, so add one
     # extra here and ignore the first element below.
-    X   = np.array([node.state.Coordinates() for node in nodeList])
+    X   = np.array([node.state.ts for node in nodeList])
     kdt = KDTree(X)
     idx = kdt.query(X, k=(K+1), return_distance=False)
 
@@ -205,7 +210,7 @@ def main():
 
     # Create the start/goal nodes.
     startnode = Node(State(startts))
-    goalNode  = Node(State(goalts))
+    goalnode  = Node(State(goalts))
 
 
     # Create the list of sample points.
@@ -233,6 +238,8 @@ def main():
     if not path:
         print("UNABLE TO FIND A PATH")
         return
+    for p in path:
+        print(p.state)
 
     # Post Process the path.
     #path = PostProcess(path)
