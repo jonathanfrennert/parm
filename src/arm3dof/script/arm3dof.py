@@ -141,7 +141,7 @@ class State:
 
     # Check the local planner - whether this connects to another state.
     def ConnectsTo(self, other):
-        n = ls.size;
+        n = len(self.ts);
         d = self.Distance(other)
         numConnects = np.floor((MAX_CHECKS * d / (2 * np.pi * np.sqrt(n))))
 
