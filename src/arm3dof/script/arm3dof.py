@@ -59,8 +59,7 @@ goalts  = np.array([0, np.pi / 2, 0])
 
 
 # Number of checks with intermediate states for ConnectsTo
-CONNECT_CHECKS = 5
-ALPHAS = CONNECT_CHECKS + 2 # actuall used in ConnectsTo
+MAX_CHECKS = 20;
 
 
 # PRM default parameters
@@ -142,8 +141,12 @@ class State:
 
     # Check the local planner - whether this connects to another state.
     def ConnectsTo(self, other):
-        for alpha in range(1, ALPHAS):
-            intermediate = self.Intermediate(other, alpha / CONNECT_CHECKS)
+        n = ls.size;
+        d = self.Distance(other)
+        numConnects = np.floor((MAX_CHECKS * d / (2 * np.pi * np.sqrt(n))))
+
+        for alpha in range(1, numConnects + 2):
+            intermediate = self.Intermediate(other, alpha / numConnects)
             if not intermediate.InFreeSpace():
                 return False
         return True
