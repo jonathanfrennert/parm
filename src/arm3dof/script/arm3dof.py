@@ -46,13 +46,16 @@ R = 0.1
 
 
 # Construct the sphere (x, y, z, radius).
-sphere = np.array([1.65, 0.0, 0.3, 0.3])
-obstacles = [sphere]
+sphere1 = np.array([1.0, 0.0, 1.0, 0.6])
+sphere2 = np.array([-1.0, 0.0, 1.0, 0.6])
+sphere3 = np.array([0.0, 1.0, 1.0, 0.6])
+sphere4 = np.array([0.0, -1.0, 1.0, 0.6])
+obstacles = [sphere1, sphere2, sphere3, sphere4]
 
 
 # Pick your start and goal locations (in radians).
 startts = np.array([0.0, 0.0, 0.0])
-goalts  = np.array([1.16, 2.36, 1.49])
+goalts  = np.array([0, np.pi / 2, 0])
 
 
 # Number of checks with intermediate states for ConnectsTo
@@ -203,7 +206,7 @@ def PostProcess(path):
 #
 #  Main Code
 #
-def main():
+def plan():
     # Report the parameters.
     print('Running with ', N, ' nodes and ', K, ' neighbors.')
 
@@ -241,9 +244,12 @@ def main():
     for p in path:
         print(p.state)
 
+
+
     # Post Process the path.
     #path = PostProcess(path)
 
+    return path
 
 if __name__== "__main__":
-    main()
+    plan()
