@@ -240,7 +240,7 @@ def targetRRT(tree, goalstate, Nmax):
 #
 #  Main Code
 #
-def main():
+def plan_rrt():
     # Report the parameters.
     print('Running with step size ', dstep, ' and up to ', Nmax, ' nodes.')
 
@@ -264,13 +264,13 @@ def main():
     # Show the path.
     paths = []
     while node.parent is not None:
-        paths.append(node.parent.state)
+        paths.append(node.parent)
         node = node.parent
 
     paths = paths[::-1]
     for val in paths:
-        print(val)
+        print(val.state)
     return paths
 
 if __name__== "__main__":
-    main()
+    plan_rrt()
