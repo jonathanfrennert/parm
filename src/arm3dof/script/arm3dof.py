@@ -117,7 +117,7 @@ class State:
     def bodyCross(self):
         for i in range(len(self.segments)):
             for j in range(i+2, len(self.segments)):
-                if line_safe_distance(self.segments[i], self.segments[j]):
+                if not line_safe_distance(self.segments[i], self.segments[j]):
                     return True
         return False
 
@@ -262,7 +262,7 @@ def plan():
     # Create the list of sample points.
     start = time.time()
     nodeList = []
-    AddNodesToListNearObstacle(nodeList, N)
+    AddNodesToList(nodeList, N)
     print('Sampling took ', time.time() - start)
 
 

@@ -50,8 +50,8 @@ sphere1 = np.array([1.0, 0.0, 1.0, 0.6])
 sphere2 = np.array([-1.0, 0.0, 1.0, 0.6])
 sphere3 = np.array([0.0, 1.0, 1.0, 0.6])
 sphere4 = np.array([0.0, -1.0, 1.0, 0.6])
+# obstacles = [sphere1, sphere2, sphere3, sphere4]
 obstacles = [sphere1, sphere2, sphere3, sphere4]
-
 # Pick your start and goal locations (in radians).
 startts = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
 goalts  = np.array([0, np.pi / 2, 0, 0, 0])
@@ -99,7 +99,8 @@ class State:
     def __repr__(self):
         repr_str = '< - '
         for i, t in enumerate(self.ts):
-            repr_str += f'T{i} {t * (180/np.pi):5.1f} deg - '
+            # repr_str += f'T{i} {t * (180/np.pi):5.1f} deg - '
+            repr_str += f'T{i} {t:5.1f} rad - '
         return repr_str + '>'
 
 
@@ -115,7 +116,11 @@ class State:
     def bodyCross(self):
         for i in range(len(self.segments)):
             for j in range(i+2, len(self.segments)):
-                if line_safe_distance(self.segments[i], self.segments[j]):
+                if not line_safe_distance(self.segments[i], self.segments[j]):
+                    # print("Segment: ", i)
+                    # print(self.segments[i])
+                    # print("Segment: ", j)
+                    # print(self.segments[j])
                     return True
         return False
 
@@ -143,12 +148,22 @@ class State:
         n = len(self.ts);
         d = self.Distance(other)
         numConnects = int(np.ceil((MAX_CHECKS * d / (2 * np.pi * np.sqrt(n)))))
-
+        # print("Self State:")
+        # print(self)
+        # print("Other State:")
+        # print(other)
+        # print("Intermediates:")
         for alpha in range(1, numConnects + 2):
             intermediate = self.Intermediate(other, alpha / numConnects)
+            # print(intermediate)
             if not intermediate.InFreeSpace():
+                # print("Failed")
+                # print()
                 return False
+        # print("Success")
+        # print()
         return True
+        
 
 ######################################################################
 #
@@ -264,8 +279,8 @@ def plan():
     # Create the list of sample points.
     start = time.time()
     nodeList = []
-    # AddNodesToListNearObstacle(nodeList, N)
-    AddNodesToList(nodeList, N)
+    AddNodesToListNearObstacle(nodeList, N)
+    # AddNodesToList(nodeList, N)
     print('Sampling took ', time.time() - start)
 
 
