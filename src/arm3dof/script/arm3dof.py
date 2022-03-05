@@ -179,7 +179,7 @@ def AddNodesToListNearObstacle(nodeList, N):
             while True:
                 state = getNearState(state)
                 
-                if state.InFreespace():
+                if state.InFreeSpace():
                     nodeList.append(Node(state))
                     N = N-1 
                     break
@@ -262,7 +262,7 @@ def plan():
     # Create the list of sample points.
     start = time.time()
     nodeList = []
-    AddNodesToList(nodeList, N)
+    AddNodesToListNearObstacle(nodeList, N)
     print('Sampling took ', time.time() - start)
 
 
