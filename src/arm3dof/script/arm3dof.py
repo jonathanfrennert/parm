@@ -185,7 +185,7 @@ def AddNodesToListNearObstacle(nodeList, N):
                     break
 
 def getNearState(state):
-    maxAngleDiff = np.pi/4
+    maxAngleDiff = np.pi/8
     ts = np.zeros(len(state.ts))
     for i in range(len(state.ts)):
 
