@@ -24,15 +24,7 @@ import line_to_line
 #
 #   List of objects, start, goal, and parameters.
 #
-(xmin, xmax) = (0, 14)
-(ymin, ymax) = (0, 10)
-
 amin, amax = -np.pi , np.pi
-
-triangles = ((( 2, 6), ( 3, 2), ( 4, 6)),
-             (( 6, 5), ( 7, 7), ( 8, 5)),
-             (( 6, 9), ( 8, 9), ( 8, 7)),
-             ((10, 3), (11, 6), (12, 3)))
 
 (startx, starty) = ( 1, 5)
 (goalx,  goaly)  = (13, 5)
@@ -40,10 +32,7 @@ triangles = ((( 2, 6), ( 3, 2), ( 4, 6)),
 # Number of checks with intermediate states for ConnectsTo
 MAX_CHECKS = 20;
 
-dstep = 1
-#dstep = 0.5
-#dstep = 1
-# dstep = 10
+dstep = 0.25
 Nmax  = 1000
 
 # arm link lengths
