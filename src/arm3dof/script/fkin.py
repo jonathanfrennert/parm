@@ -4,7 +4,7 @@ def fkin(ls, ts, cs, ss):
     """
     Give forward kinematics of each joint
     """
-    # TODO: Change in future
+    # TODO: Make it a loop
     p1 = np.array([0, 0, ls[0]])
 
     # Get r, z
