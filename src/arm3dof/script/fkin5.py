@@ -1,6 +1,6 @@
 import numpy as np
 
-def fkin(ls, ts, cs, ss):
+def fkin5(ls, ts, cs, ss):
     """
     Give forward kinematics of each joint
     """

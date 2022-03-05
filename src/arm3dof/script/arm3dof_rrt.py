@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-from fkin import fkin
+from fkin3 import fkin
+from fkin5 import fkin5
 from segInSphere import segInSphere
 
 

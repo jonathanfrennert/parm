@@ -7,7 +7,8 @@ import numpy as np
 import random
 import time
 
-from fkin import fkin
+from fkin3 import fkin
+from fkin5 import fkin5
 from segInSphere import segInSphere
 
 
