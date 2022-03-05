@@ -10,7 +10,7 @@ import time
 from fkin3 import fkin
 from fkin5 import fkin5
 from segInSphere import segInSphere
-
+from line_to_line import *
 
 
 from sklearn.neighbors import KDTree
@@ -117,7 +117,7 @@ class State:
     def bodyCross(self):
         for i in range(len(self.segments)):
             for j in range(i+2, len(self.segments)):
-                if line_to_line(self.segments[i], self.segments[j]):
+                if line_safe_distance(self.segments[i], self.segments[j]):
                     return True
         return False
 
@@ -144,7 +144,7 @@ class State:
     def ConnectsTo(self, other):
         n = len(self.ts);
         d = self.Distance(other)
-        numConnects = np.floor((MAX_CHECKS * d / (2 * np.pi * np.sqrt(n))))
+        numConnects = int(np.ceil((MAX_CHECKS * d / (2 * np.pi * np.sqrt(n)))))
 
         for alpha in range(1, numConnects + 2):
             intermediate = self.Intermediate(other, alpha / numConnects)
@@ -168,6 +168,46 @@ def AddNodesToList(nodeList, N):
             nodeList.append(Node(state))
             N = N-1
 
+def AddNodesToListNearObstacle(nodeList, N):
+    while (N > 0):
+        state = State(np.array([random.uniform(amin, amax),
+                      random.uniform(0, amax/2),
+                      random.uniform(amin, amax)]))
+
+        if state.obstacleCross():
+             # Add a sample nearby until it is not in an obstacle
+            while True:
+                state = getNearState(state)
+                
+                if state.InFreespace():
+                    nodeList.append(Node(state))
+                    N = N-1 
+                    break
+
+def getNearState(state):
+    maxAngleDiff = np.pi/4
+    ts = np.zeros(len(state.ts))
+    for i in range(len(state.ts)):
+
+        low = ts[i] - maxAngleDiff
+        high = ts[i] + maxAngleDiff 
+
+        # The second joint has angles in [0, pi]
+        if i == 1:
+            if low < 0:
+                low = 0
+            if high > np.pi:
+                high = np.pi
+        # The other joints have angles between [-pi, pi]
+        else:
+            if low < -np.pi:
+                low = -np.pi
+            if high > np.pi:
+                high = np.pi
+        
+        ts[i] = state.ts[i] + random.uniform(low, high)
+        
+    return State(ts)
 
 #
 #   Connect the nearest neighbors
@@ -192,7 +232,6 @@ def ConnectNearestNeighbors(nodeList, K):
             if nodeList[i].state.ConnectsTo(nodeList[n].state):
                 nodeList[i].children.append(nodeList[n])
                 nodeList[n].parents.append(nodeList[i])
-
 
 #
 #  Post Process the Path
