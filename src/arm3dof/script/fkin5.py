@@ -19,7 +19,7 @@ def fkin5(ls, ts, cs, ss):
     # new joint
     p3 = np.array([- r * ss[0], r * cs[0], z])
 
-    # Get r, l for foruth bar
+    # Get r, l for fourth bar
     r += ls[3] * np.cos(ts[1] + ts[2] + ts[3])
     z += ls[3] * np.sin(ts[1] + ts[2] + ts[3])
 
