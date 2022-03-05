@@ -171,7 +171,7 @@ def AddNodesToList(nodeList, N):
 def AddNodesToListNearObstacle(nodeList, N):
     while (N > 0):
         state = State(np.array([random.uniform(amin, amax),
-                      random.uniform(0, amax/2),
+                      random.uniform(0, amax),
                       random.uniform(amin, amax)]))
 
         if state.obstacleCross():
