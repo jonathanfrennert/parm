@@ -63,39 +63,6 @@ obstacles = [sphere1, sphere2, sphere3, sphere4]
 
 ######################################################################
 #
-#   Visualization
-#
-class Visualization:
-    def __init__(self):
-        # Clear and show.
-        self.ClearFigure()
-        self.ShowFigure()
-
-    def ClearFigure(self):
-        # Clear the current, or create a new figure.
-        plt.clf()
-
-        # Create a new axes, enable the grid, and set axis limits.
-        plt.axes()
-        plt.grid(True)
-        plt.gca().axis('on')
-        plt.gca().set_xlim(xmin, xmax)
-        plt.gca().set_ylim(ymin, ymax)
-        plt.gca().set_aspect('equal')
-
-        # Show the triangles.
-        for tr in triangles:
-            plt.plot((tr[0][0], tr[1][0], tr[2][0], tr[0][0]),
-                     (tr[0][1], tr[1][1], tr[2][1], tr[0][1]),
-                     'k-', linewidth=2)
-
-    def ShowFigure(self):
-        # Show the plot.
-        plt.pause(0.001)
-
-
-######################################################################
-#
 #   State Definition
 #
 class State:
@@ -186,17 +153,6 @@ class Node:
 
         # Link to parent for the tree structure.
         self.parent = parentnode
-
-        # Automatically draw.
-        self.Draw('r-', linewidth=1)
-
-    # Draw a line to the parent.
-    def Draw(self, *args, **kwargs):
-        if self.parent is not None:
-            plt.plot((self.state.x, self.parent.state.x),
-                     (self.state.y, self.parent.state.y),
-                     *args, **kwargs)
-            plt.pause(0.001)
 
 
 ######################################################################
