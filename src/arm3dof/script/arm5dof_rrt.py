@@ -29,11 +29,9 @@ amin, amax = -np.pi , np.pi
 (startx, starty) = ( 1, 5)
 (goalx,  goaly)  = (13, 5)
 
-# Number of checks with intermediate states for ConnectsTo
-MAX_CHECKS = 100;
 
-dstep = 1
-Nmax  = 1000
+dstep = np.pi / 10
+Nmax  = 10000
 
 # arm link lengths
 ls = np.array([0.0, 0.5, 0.5, 0.5, 0.5])
@@ -110,7 +108,7 @@ class State:
 
     def obstacleCross(self):
         for i in range(len(self.segments)):
-            for j in range(len(obstacles))  :
+            for j in range(len(obstacles)):
                 if segInSphere(self.segments[i], obstacles[j]):
                     return True
         return False
@@ -131,9 +129,10 @@ class State:
         n = len(self.ts);
         d = self.Distance(other)
         numConnects = int(np.ceil((MAX_CHECKS * d / (2 * np.pi * np.sqrt(n)))))
+        #print(numConnects)
 
         for alpha in range(1, numConnects + 2):
-            intermediate = self.Intermediate(other, alpha / numConnects)
+            intermediate = self.Intermediate(other, alpha / (numConnects + 2))
             if not intermediate.InFreeSpace():
                 return False
         return True
@@ -174,8 +173,7 @@ def RRT(tree, goalstate, Nmax):
         # Find the nearest node (node with state nearest the target state).
         # This is inefficient (slow for large trees), but simple.
         list_vals = [(node.state.Distance(targetstate), node) for node in tree]
-        (d2, nearnode)  = min(list_vals)
-        d = np.sqrt(d2)
+        (d, nearnode)  = min(list_vals)
         nearstate = nearnode.state
 
         # Determine the next state, a step size (dstep) away.
@@ -185,7 +183,7 @@ def RRT(tree, goalstate, Nmax):
         d_theta4 = targetstate.ts[3] - nearstate.ts[3]
         d_theta5 = targetstate.ts[4] - nearstate.ts[4]
         d_theta = np.array([d_theta1, d_theta2, d_theta3, d_theta4, d_theta5])
-        
+
         d_theta = d_theta / np.linalg.norm(d_theta)
         nextstate = State(nearstate.ts + dstep*d_theta)
 
@@ -196,7 +194,7 @@ def RRT(tree, goalstate, Nmax):
 
             # Also try to connect the goal.
 
-            if  np.sqrt(nextstate.Distance(goalstate)) <= dstep:
+            if nextstate.Distance(goalstate) <= dstep:
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
@@ -209,7 +207,7 @@ def targetRRT(tree, goalstate, Nmax):
     # Loop.
     while True:
         # Determine the target state.
-        if random.uniform(0,1) < 0.5:
+        if random.uniform(0,1) < 0.6:
             targetstate = goalstate
         else:
             # Determine the target state.
@@ -223,8 +221,7 @@ def targetRRT(tree, goalstate, Nmax):
         # Find the nearest node (node with state nearest the target state).
         # This is inefficient (slow for large trees), but simple.
         list_vals = [(node.state.Distance(targetstate), node) for node in tree]
-        (d2, nearnode)  = min(list_vals)
-        d = np.sqrt(d2)
+        (d, nearnode)  = min(list_vals)
         nearstate = nearnode.state
 
         # Determine the next state, a step size (dstep) away.
@@ -233,11 +230,10 @@ def targetRRT(tree, goalstate, Nmax):
         d_theta3 = targetstate.ts[2] - nearstate.ts[2]
         d_theta4 = targetstate.ts[3] - nearstate.ts[3]
         d_theta5 = targetstate.ts[4] - nearstate.ts[4]
-        nextstate = State(np.array([nearstate.ts[0] + dstep * d_theta1,
-                                    nearstate.ts[1] + dstep * d_theta2,
-                                    nearstate.ts[2] + dstep * d_theta3,
-                                    nearstate.ts[3] + dstep * d_theta4,
-                                    nearstate.ts[4] + dstep * d_theta5]))
+        d_theta = np.array([d_theta1, d_theta2, d_theta3, d_theta4, d_theta5])
+
+        d_theta = d_theta / np.linalg.norm(d_theta)
+        nextstate = State(nearstate.ts + dstep*d_theta)
 
         # Check whether to attach (creating a new node).
         if nearstate.ConnectsTo(nextstate):
@@ -246,7 +242,7 @@ def targetRRT(tree, goalstate, Nmax):
 
             # Also try to connect the goal.
 
-            if  np.sqrt(nextstate.Distance(goalstate)) <= dstep:
+            if  nextstate.Distance(goalstate) <= dstep and nextstate.ConnectsTo(goalstate):
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
@@ -258,7 +254,7 @@ def targetRRT(tree, goalstate, Nmax):
 #
 #  Main Code
 #
-def main():
+def plan():
     # Report the parameters.
     print('Running with step size ', dstep, ' and up to ', Nmax, ' nodes.')
 
@@ -280,7 +276,7 @@ def main():
         return
 
     # Show the path.
-    paths = []
+    paths = [node]
     while node.parent is not None:
         paths.append(node.parent)
         node = node.parent
