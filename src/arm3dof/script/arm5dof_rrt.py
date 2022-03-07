@@ -16,7 +16,6 @@ from segInSphere import segInSphere
 from sklearn.neighbors import KDTree
 from prmtools import *
 
-from planarutils import *
 import line_to_line
 
 ######################################################################

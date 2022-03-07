@@ -163,7 +163,7 @@ class State:
         # print("Success")
         # print()
         return True
-        
+
 
 ######################################################################
 #
@@ -195,10 +195,10 @@ def AddNodesToListNearObstacle(nodeList, N):
              # Add a sample nearby until it is not in an obstacle
             while True:
                 state = getNearState(state)
-                
+
                 if state.InFreeSpace():
                     nodeList.append(Node(state))
-                    N = N-1 
+                    N = N-1
                     break
 
 def getNearState(state):
@@ -207,7 +207,7 @@ def getNearState(state):
     for i in range(len(state.ts)):
 
         low = state.ts[i] - maxAngleDiff
-        high = state.ts[i] + maxAngleDiff 
+        high = state.ts[i] + maxAngleDiff
 
         # The second joint has angles in [0, pi]
         if i == 1:
@@ -221,9 +221,9 @@ def getNearState(state):
                 low = amin
             if high > amax:
                 high = amax
-        
+
         ts[i] = state.ts[i] + random.uniform(low, high)
-        
+
     return State(ts)
 
 #
