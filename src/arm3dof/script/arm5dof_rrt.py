@@ -5,6 +5,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+import time
 
 from fkin3 import fkin
 from fkin5 import fkin5
@@ -330,10 +331,15 @@ def plan():
     paths = PostProcess(paths)
     for val in paths:
         print(val.state)
+
+    print("Length of our path : ", len(path))
+
     return paths
 
 def main():
-    plan()
+    path = plan()
 
 if __name__== "__main__":
+    start = time.time()
     main()
+    print("Time taken: ", time.time() - start)
