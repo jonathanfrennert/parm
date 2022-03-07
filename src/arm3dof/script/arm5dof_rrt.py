@@ -41,7 +41,7 @@ L  = ls.sum()
 R = 0.1
 
 # RRT goal target rate
-RATE = 0.05
+RATE = 0.6
 
 
 # Construct the sphere (x, y, z, radius).
@@ -227,7 +227,7 @@ def targetRRT(tree, goalstate, Nmax):
         list_vals = [(node.state.Distance(targetstate), node) for node in tree]
         (d, nearnode)  = min(list_vals)
         nearstate = nearnode.state
-
+        
         # Determine the next state, a step size (dstep) away.
         d_theta1 = targetstate.ts[0] - nearstate.ts[0]
         d_theta2 = targetstate.ts[1] - nearstate.ts[1]
@@ -238,28 +238,29 @@ def targetRRT(tree, goalstate, Nmax):
 
         d_theta = d_theta / np.linalg.norm(d_theta)
         nextstate = State(nearstate.ts + dstep*d_theta)
-
+        # print(nextstate)
         # Check whether to attach (creating a new node).
-        if nearstate.ConnectsTo(nextstate):
+        if nearstate.ConnectsTo(nextstate) and np.all(nearstate.ts != nextstate.ts):
             nextnode = Node(nextstate, nearnode)
             tree.append(nextnode)
 
             # Also try to connect the goal.
 
-            if  nextstate.Distance(goalstate) <= dstep and nextstate.ConnectsTo(goalstate):
+            # if  nextstate.Distance(goalstate) <= dstep and nextstate.ConnectsTo(goalstate):
+            if nextstate.ConnectsTo(goalstate):
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
         # Print the distance
-        list_vals = [(node.state.Distance(goalstate), node) for node in tree]
-        (d, _)  = min(list_vals)
-        print(d)
+        # list_vals = [(node.state.Distance(goalstate), node) for node in tree]
+        # (d, nearestnode)  = min(list_vals)
+        # # print(nearestnode.state)
         # Check whether we should abort (tree has gotten too large).
         if (len(tree) >= Nmax):
             return None
 
 def PostProcess(path):
-    # Cycles of intermediate addition
+    # Cycles of intermediate additionw
     c = 6
     # Number of clean ups within cycle
     n = 2
