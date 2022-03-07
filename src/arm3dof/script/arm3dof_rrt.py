@@ -15,7 +15,6 @@ from segInSphere import segInSphere
 from sklearn.neighbors import KDTree
 from prmtools import *
 
-from planarutils import *
 import line_to_line
 
 ######################################################################
@@ -166,17 +165,17 @@ def RRT(tree, goalstate, Nmax):
         # Find the nearest node (node with state nearest the target state).
         # This is inefficient (slow for large trees), but simple.
         list_vals = [(node.state.Distance(targetstate), node) for node in tree]
-        (d2, nearnode)  = min(list_vals)
-        d = np.sqrt(d2)
+        (d, nearnode)  = min(list_vals)
         nearstate = nearnode.state
 
         # Determine the next state, a step size (dstep) away.
         d_theta1 = targetstate.ts[0] - nearstate.ts[0]
         d_theta2 = targetstate.ts[1] - nearstate.ts[1]
         d_theta3 = targetstate.ts[2] - nearstate.ts[2]
-        nextstate = State(np.array([nearstate.ts[0] + dstep * d_theta1,
-                                    nearstate.ts[1] + dstep * d_theta2,
-                                    nearstate.ts[2] + dstep * d_theta3]))
+        d_theta = np.array([d_theta1, d_theta2, d_theta3])
+
+        d_theta = d_theta / np.linalg.norm(d_theta)
+        nextstate = State(nearstate.ts + dstep*d_theta)
 
         # Check whether to attach (creating a new node).
         if nearstate.ConnectsTo(nextstate):
@@ -185,7 +184,7 @@ def RRT(tree, goalstate, Nmax):
 
             # Also try to connect the goal.
 
-            if  np.sqrt(nextstate.Distance(goalstate)) <= dstep:
+            if  (nextstate.Distance(goalstate) <= dstep) and nextstate.ConnectsTo(goalstate):
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
@@ -217,9 +216,10 @@ def targetRRT(tree, goalstate, Nmax):
         d_theta1 = targetstate.ts[0] - nearstate.ts[0]
         d_theta2 = targetstate.ts[1] - nearstate.ts[1]
         d_theta3 = targetstate.ts[2] - nearstate.ts[2]
-        nextstate = State(np.array([nearstate.ts[0] + dstep * d_theta1,
-                                    nearstate.ts[1] + dstep * d_theta2,
-                                    nearstate.ts[2] + dstep * d_theta3]))
+        d_theta = np.array([d_theta1, d_theta2, d_theta3])
+
+        d_theta = d_theta / np.linalg.norm(d_theta)
+        nextstate = State(nearstate.ts + dstep*d_theta)
 
         # Check whether to attach (creating a new node).
         if nearstate.ConnectsTo(nextstate):
@@ -227,8 +227,7 @@ def targetRRT(tree, goalstate, Nmax):
             tree.append(nextnode)
 
             # Also try to connect the goal.
-
-            if  np.sqrt(nextstate.Distance(goalstate)) <= dstep:
+            if (nextstate.Distance(goalstate) <= dstep) and nextstate.ConnectsTo(goalstate):
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
@@ -240,7 +239,7 @@ def targetRRT(tree, goalstate, Nmax):
 #
 #  Main Code
 #
-def plan_rrt():
+def plan():
     # Report the parameters.
     print('Running with step size ', dstep, ' and up to ', Nmax, ' nodes.')
 

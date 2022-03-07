@@ -11,7 +11,7 @@ import numpy as np
 
 from sensor_msgs.msg   import JointState
 
-from arm3dof_rrt import plan
+from arm3dof_prm import plan
 
 
 #
@@ -116,7 +116,6 @@ if __name__ == "__main__":
 
     # Instantiate the trajectory generator object, encapsulating all
     # the computation and local variables.
-    # rrt plan
     path = plan()
 
     generator = Generator(path)

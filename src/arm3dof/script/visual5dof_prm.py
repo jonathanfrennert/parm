@@ -11,7 +11,7 @@ import numpy as np
 
 from sensor_msgs.msg   import JointState
 
-from arm3dof import plan
+from arm5dof_rrt import plan
 
 
 #
@@ -59,6 +59,9 @@ class Stay(Hold):
         Hold.__init__(self, p, math.inf)
 
 
+MAX_SEC = 10
+
+
 #
 #  Generator Class
 #
@@ -71,9 +74,11 @@ class Generator:
         self.pub = rospy.Publisher("/joint_states", JointState, queue_size=10)
         rospy.sleep(0.25)
 
+        n = len(path[0].ts)
         self.segments = []
         for i in range(len(path) - 1):
-            self.segments.append(Goto(path[i].state.ts, path[i+1].state.ts, 1.0))
+            segTime = path[i].state.Distance(path[i+1].state) / (2 * np.pi * np.sqrt(n)) * MAX_SEC
+            self.segments.append(Goto(path[i].state.ts, path[i+1].state.ts, segTime))
         self.segments.append(Hold(path[-1].state.ts, 1))
 
         # Initialize the current segment index and starting time t0.
@@ -95,7 +100,7 @@ class Generator:
         # match the joint names in the URDF.  And their number must be
         # the number of position/velocity elements.
         cmdmsg = JointState()
-        cmdmsg.name         = ['theta1', 'theta2', 'theta3']
+        cmdmsg.name         = ['theta1', 'theta2', 'theta3', 'theta4', 'theta5']
         cmdmsg.position     = theta
         cmdmsg.velocity     = thetadot
         cmdmsg.header.stamp = rospy.Time.now()

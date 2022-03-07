@@ -194,7 +194,7 @@ def RRT(tree, goalstate, Nmax):
 
             # Also try to connect the goal.
 
-            if nextstate.Distance(goalstate) <= dstep:
+            if (nextstate.Distance(goalstate) <= dstep) and nextstate.ConnectsTo(goalnode.state):
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
@@ -334,6 +334,6 @@ def plan():
 
 def main():
     plan()
-    
+
 if __name__== "__main__":
     main()
