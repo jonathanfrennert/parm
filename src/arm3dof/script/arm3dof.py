@@ -117,7 +117,7 @@ class State:
     def bodyCross(self):
         for i in range(len(self.segments)):
             for j in range(i+2, len(self.segments)):
-                if line_safe_distance(self.segments[i], self.segments[j]):
+                if not line_safe_distance(self.segments[i], self.segments[j]):
                     return True
         return False
 
@@ -178,10 +178,10 @@ def AddNodesToListNearObstacle(nodeList, N):
              # Add a sample nearby until it is not in an obstacle
             while True:
                 state = getNearState(state)
-                
+
                 if state.InFreeSpace():
                     nodeList.append(Node(state))
-                    N = N-1 
+                    N = N-1
                     break
 
 def getNearState(state):
@@ -190,7 +190,7 @@ def getNearState(state):
     for i in range(len(state.ts)):
 
         low = ts[i] - maxAngleDiff
-        high = ts[i] + maxAngleDiff 
+        high = ts[i] + maxAngleDiff
 
         # The second joint has angles in [0, pi]
         if i == 1:
@@ -204,9 +204,9 @@ def getNearState(state):
                 low = -np.pi
             if high > np.pi:
                 high = np.pi
-        
+
         ts[i] = state.ts[i] + random.uniform(low, high)
-        
+
     return State(ts)
 
 #
@@ -232,6 +232,31 @@ def ConnectNearestNeighbors(nodeList, K):
             if nodeList[i].state.ConnectsTo(nodeList[n].state):
                 nodeList[i].children.append(nodeList[n])
                 nodeList[n].parents.append(nodeList[i])
+
+
+#
+#   Connect the nearest neighbors
+#
+def ConnectNearestNeighborsLazy(nodeList, K):
+    # Clear any existing neighbors.
+    for node in nodeList:
+        node.children = []
+        node.parents  = []
+
+    # Determine the indices for the nearest neighbors.  This also
+    # reports the node itself as the closest neighbor, so add one
+    # extra here and ignore the first element below.
+    X   = np.array([node.state.ts for node in nodeList])
+    kdt = KDTree(X)
+    idx = kdt.query(X, k=(K+1), return_distance=False)
+
+    # Add the edges (from parent to child).  Ignore the first neighbor
+    # being itself.
+    for i, nbrs in enumerate(idx):
+        for n in nbrs[1:]:
+            nodeList[i].children.append(nodeList[n])
+            nodeList[n].parents.append(nodeList[i])
+
 
 #
 #  Post Process the Path
@@ -262,7 +287,7 @@ def plan():
     # Create the list of sample points.
     start = time.time()
     nodeList = []
-    AddNodesToListNearObstacle(nodeList, N)
+    AddNodesToList(nodeList, N)
     print('Sampling took ', time.time() - start)
 
 
