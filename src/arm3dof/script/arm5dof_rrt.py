@@ -40,6 +40,9 @@ L  = ls.sum()
 # radius of arm links
 R = 0.1
 
+# RRT goal target rate
+RATE = 0.05
+
 
 # Construct the sphere (x, y, z, radius).
 sphere1 = np.array([1.0, 0.0, 1.0, 0.6])
@@ -207,7 +210,7 @@ def targetRRT(tree, goalstate, Nmax):
     # Loop.
     while True:
         # Determine the target state.
-        if random.uniform(0,1) < 0.6:
+        if random.uniform(0,1) < RATE:
             targetstate = goalstate
         else:
             # Determine the target state.
@@ -217,6 +220,7 @@ def targetRRT(tree, goalstate, Nmax):
             theta4 = random.uniform(amin, amax)
             theta5 = random.uniform(amin, amax)
             targetstate = State(np.array([theta1, theta2, theta3, theta4, theta5]))
+
 
         # Find the nearest node (node with state nearest the target state).
         # This is inefficient (slow for large trees), but simple.
@@ -246,6 +250,10 @@ def targetRRT(tree, goalstate, Nmax):
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
+        # Print the distance
+        list_vals = [(node.state.Distance(goalstate), node) for node in tree]
+        (d, _)  = min(list_vals)
+        print(d)
         # Check whether we should abort (tree has gotten too large).
         if (len(tree) >= Nmax):
             return None
