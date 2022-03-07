@@ -194,7 +194,7 @@ def RRT(tree, goalstate, Nmax):
 
             # Also try to connect the goal.
 
-            if (nextstate.Distance(goalstate) <= dstep) and nextstate.ConnectsTo(goalnode.state):
+            if nextstate.Distance(goalstate) <= dstep and nextstate.ConnectsTo(goalstate):
                 goalnode = Node(goalstate, nextnode)
                 return(goalnode)
 
@@ -251,7 +251,6 @@ def targetRRT(tree, goalstate, Nmax):
             return None
 
 def PostProcess(path):
-    print("post process was called")
     # Cycles of intermediate addition
     c = 6
     # Number of clean ups within cycle
@@ -289,7 +288,7 @@ def addIntermediates(path):
 
         # Add the midpoint between adjacent nodes.
         newPath.append(path[i])
-        newPath.append(Node(State(midCoords, path[i])))
+        newPath.append(Node(State(midCoords), path[i]))
         newPath.append(path[i+1])
     return newPath
 

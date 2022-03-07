@@ -254,12 +254,46 @@ def ConnectNearestNeighbors(nodeList, K):
 #  Post Process the Path
 #
 def PostProcess(path):
-    lazy_path = [path[0]]
-    for i in range(1, len(path)-1):
-        if not lazy_path[-1].state.ConnectsTo(path[i+1].state):
-            lazy_path.append(path[i])
-    lazy_path.append(path[-1])
-    return lazy_path
+    # Cycles of intermediate addition
+    c = 6
+    # Number of clean ups within cycle
+    n = 2
+    cleaned = False
+    newPath = path
+    for i in range(c):
+        newPath = addIntermediates(newPath)
+        if i % (c/n) == 0:
+            newPath = removeExcess(newPath)
+            cleaned = True
+    if cleaned == True:
+        newPath = removeExcess(newPath)
+    return newPath
+
+def removeExcess(path):
+    newPath = [path[0]]
+    # For all nodes except the last one in the path.
+    for i in range(len(path)-1):
+        # Check if the last node on the new path doesn't connect to the next node.
+        if not newPath[-1].state.ConnectsTo(path[i+1].state):
+            # When it doesn't, connect the previous.
+            newPath.append(path[i])
+    # Make sure to include the final node.
+    newPath.append(path[-1])
+    return newPath
+
+def addIntermediates(path):
+    newPath = []
+    for i in range(len(path)-1):
+        currCoords = path[i].state.ts
+        nextCoords = path[i+1].state.ts
+        # Calculate the mid point
+        midCoords = .5 * (currCoords + nextCoords)
+
+        # Add the midpoint between adjacent nodes.
+        newPath.append(path[i])
+        newPath.append(Node(State(midCoords), path[i]))
+        newPath.append(path[i+1])
+    return newPath
 
 
 ######################################################################
@@ -305,10 +339,8 @@ def plan():
     for p in path:
         print(p.state)
 
-
-
     # Post Process the path.
-    #path = PostProcess(path)
+    path = PostProcess(path)
 
     return path
 
