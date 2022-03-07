@@ -332,7 +332,7 @@ def plan():
     for val in paths:
         print(val.state)
 
-    print("Length of our path : ", len(path))
+    print("Length of our path : ", len(paths))
 
     return paths
 
