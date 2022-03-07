@@ -30,17 +30,18 @@ amin, amax = -np.pi , np.pi
 (goalx,  goaly)  = (13, 5)
 
 # Number of checks with intermediate states for ConnectsTo
-MAX_CHECKS = 20;
+MAX_CHECKS = 100;
 
-dstep = 0.25
+dstep = 1
 Nmax  = 1000
 
 # arm link lengths
-ls = np.array([0.0, 1.0, 1.0])
+ls = np.array([0.0, 0.5, 0.5, 0.5, 0.5])
 L  = ls.sum()
 
 # radius of arm links
 R = 0.1
+
 
 # Construct the sphere (x, y, z, radius).
 sphere1 = np.array([1.0, 0.0, 1.0, 0.6])
@@ -48,10 +49,15 @@ sphere2 = np.array([-1.0, 0.0, 1.0, 0.6])
 sphere3 = np.array([0.0, 1.0, 1.0, 0.6])
 sphere4 = np.array([0.0, -1.0, 1.0, 0.6])
 obstacles = [sphere1, sphere2, sphere3, sphere4]
+# obstacles = []
 
-startts = np.array([0.0, 0.0, 0.0])
-goalts  = np.array([0, np.pi / 2, 0])
+# Pick your start and goal locations (in radians).
+startts = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
+goalts  = np.array([0, np.pi / 2, 0, 0, 0])
 
+
+# Number of checks with intermediate states for ConnectsTo
+MAX_CHECKS = 20;
 
 ######################################################################
 #
@@ -65,7 +71,7 @@ class State:
         self.ss = np.sin(ts) # precompute
 
         # links
-        self.ps = fkin(ls, ts, self.cs, self.ss)
+        self.ps = fkin5(ls, ts, self.cs, self.ss)
 
         segments = []
         for i in range(len(self.ps)- 1):
@@ -97,7 +103,7 @@ class State:
     def bodyCross(self):
         for i in range(len(self.segments)):
             for j in range(i+2, len(self.segments)):
-                if line_to_line.line_safe_distance(self.segments[i], self.segments[j]):
+                if not line_to_line.line_safe_distance(self.segments[i], self.segments[j]):
                     return True
         return False
 
@@ -161,7 +167,9 @@ def RRT(tree, goalstate, Nmax):
         theta1 = random.uniform(amin, amax)
         theta2 = random.uniform(amin, amax)
         theta3 = random.uniform(amin, amax)
-        targetstate = State(np.array([theta1, theta2, theta3]))        # How to pick x/y?
+        theta4 = random.uniform(amin, amax)
+        theta5 = random.uniform(amin, amax)
+        targetstate = State(np.array([theta1, theta2, theta3, theta4, theta5]))        # How to pick x/y?
 
         # Find the nearest node (node with state nearest the target state).
         # This is inefficient (slow for large trees), but simple.
@@ -174,9 +182,12 @@ def RRT(tree, goalstate, Nmax):
         d_theta1 = targetstate.ts[0] - nearstate.ts[0]
         d_theta2 = targetstate.ts[1] - nearstate.ts[1]
         d_theta3 = targetstate.ts[2] - nearstate.ts[2]
-        nextstate = State(np.array([nearstate.ts[0] + dstep * d_theta1,
-                                    nearstate.ts[1] + dstep * d_theta2,
-                                    nearstate.ts[2] + dstep * d_theta3]))
+        d_theta4 = targetstate.ts[3] - nearstate.ts[3]
+        d_theta5 = targetstate.ts[4] - nearstate.ts[4]
+        d_theta = np.array([d_theta1, d_theta2, d_theta3, d_theta4, d_theta5])
+        
+        d_theta = d_theta / np.linalg.norm(d_theta)
+        nextstate = State(nearstate.ts + dstep*d_theta)
 
         # Check whether to attach (creating a new node).
         if nearstate.ConnectsTo(nextstate):
@@ -198,13 +209,16 @@ def targetRRT(tree, goalstate, Nmax):
     # Loop.
     while True:
         # Determine the target state.
-        if random.uniform(0,1) < 0.1:
+        if random.uniform(0,1) < 0.5:
             targetstate = goalstate
         else:
+            # Determine the target state.
             theta1 = random.uniform(amin, amax)
             theta2 = random.uniform(amin, amax)
             theta3 = random.uniform(amin, amax)
-            targetstate = State(np.array([theta1, theta2, theta3]))
+            theta4 = random.uniform(amin, amax)
+            theta5 = random.uniform(amin, amax)
+            targetstate = State(np.array([theta1, theta2, theta3, theta4, theta5]))
 
         # Find the nearest node (node with state nearest the target state).
         # This is inefficient (slow for large trees), but simple.
@@ -217,9 +231,13 @@ def targetRRT(tree, goalstate, Nmax):
         d_theta1 = targetstate.ts[0] - nearstate.ts[0]
         d_theta2 = targetstate.ts[1] - nearstate.ts[1]
         d_theta3 = targetstate.ts[2] - nearstate.ts[2]
+        d_theta4 = targetstate.ts[3] - nearstate.ts[3]
+        d_theta5 = targetstate.ts[4] - nearstate.ts[4]
         nextstate = State(np.array([nearstate.ts[0] + dstep * d_theta1,
                                     nearstate.ts[1] + dstep * d_theta2,
-                                    nearstate.ts[2] + dstep * d_theta3]))
+                                    nearstate.ts[2] + dstep * d_theta3,
+                                    nearstate.ts[3] + dstep * d_theta4,
+                                    nearstate.ts[4] + dstep * d_theta5]))
 
         # Check whether to attach (creating a new node).
         if nearstate.ConnectsTo(nextstate):
@@ -240,7 +258,7 @@ def targetRRT(tree, goalstate, Nmax):
 #
 #  Main Code
 #
-def plan_rrt():
+def main():
     # Report the parameters.
     print('Running with step size ', dstep, ' and up to ', Nmax, ' nodes.')
 
@@ -273,4 +291,4 @@ def plan_rrt():
     return paths
 
 if __name__== "__main__":
-    plan_rrt()
+    main()
