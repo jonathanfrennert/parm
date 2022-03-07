@@ -49,6 +49,7 @@ sphere2 = np.array([-1.0, 0.0, 1.0, 0.6])
 sphere3 = np.array([0.0, 1.0, 1.0, 0.6])
 sphere4 = np.array([0.0, -1.0, 1.0, 0.6])
 obstacles = [sphere1, sphere2, sphere3, sphere4]
+# obstacles = []
 
 # Pick your start and goal locations (in radians).
 startts = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
@@ -102,7 +103,7 @@ class State:
     def bodyCross(self):
         for i in range(len(self.segments)):
             for j in range(i+2, len(self.segments)):
-                if line_to_line.line_safe_distance(self.segments[i], self.segments[j]):
+                if not line_to_line.line_safe_distance(self.segments[i], self.segments[j]):
                     return True
         return False
 
@@ -183,11 +184,10 @@ def RRT(tree, goalstate, Nmax):
         d_theta3 = targetstate.ts[2] - nearstate.ts[2]
         d_theta4 = targetstate.ts[3] - nearstate.ts[3]
         d_theta5 = targetstate.ts[4] - nearstate.ts[4]
-        nextstate = State(np.array([nearstate.ts[0] + dstep * d_theta1,
-                                    nearstate.ts[1] + dstep * d_theta2,
-                                    nearstate.ts[2] + dstep * d_theta3,
-                                    nearstate.ts[3] + dstep * d_theta4,
-                                    nearstate.ts[4] + dstep * d_theta5]))
+        d_theta = np.array([d_theta1, d_theta2, d_theta3, d_theta4, d_theta5])
+        
+        d_theta = d_theta / np.linalg.norm(d_theta)
+        nextstate = State(nearstate.ts + dstep*d_theta)
 
         # Check whether to attach (creating a new node).
         if nearstate.ConnectsTo(nextstate):
