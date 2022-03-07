@@ -261,7 +261,7 @@ def plan():
         return
 
     # Show the path.
-    paths = []
+    paths = [node]
     while node.parent is not None:
         paths.append(node.parent)
         node = node.parent
@@ -272,4 +272,4 @@ def plan():
     return paths
 
 if __name__== "__main__":
-    plan_rrt()
+    plan()
