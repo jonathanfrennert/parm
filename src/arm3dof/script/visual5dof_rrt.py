@@ -74,7 +74,7 @@ class Generator:
         self.pub = rospy.Publisher("/joint_states", JointState, queue_size=10)
         rospy.sleep(0.25)
 
-        n = len(path[0].ts)
+        n = len(path[0].state.ts)
         self.segments = []
         for i in range(len(path) - 1):
             segTime = path[i].state.Distance(path[i+1].state) / (2 * np.pi * np.sqrt(n)) * MAX_SEC

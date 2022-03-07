@@ -49,8 +49,13 @@ sphere1 = np.array([1.0, 0.0, 1.0, 0.6])
 sphere2 = np.array([-1.0, 0.0, 1.0, 0.6])
 sphere3 = np.array([0.0, 1.0, 1.0, 0.6])
 sphere4 = np.array([0.0, -1.0, 1.0, 0.6])
+sphere5 = np.array([0.5, 0.5, 1.0, 0.45])
+sphere6 = np.array([-0.5, -0.5, 1.0, 0.45])
+sphere7 = np.array([0.5, -0.5, 1.0, 0.45])
+sphere8 = np.array([-0.5, 0.5, 1.0, 0.45])
 obstacles = [sphere1, sphere2, sphere3, sphere4]
-# obstacles = []
+#obstacles = [sphere1, sphere2, sphere3, sphere4, sphere5, sphere6, sphere7, sphere8]
+#obstacles = []
 
 # Pick your start and goal locations (in radians).
 startts = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
