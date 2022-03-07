@@ -5,6 +5,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+import time
 
 from fkin3 import fkin
 from fkin5 import fkin5
@@ -333,7 +334,10 @@ def plan():
     return paths
 
 def main():
-    plan()
+    path = plan()
+    print("Length of our path : ", len(path))
     
 if __name__== "__main__":
+    start = time.time()
     main()
+    print("Time taken: ", time.time() - start)
