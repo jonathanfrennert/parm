@@ -30,7 +30,7 @@ amin, amax = -np.pi , np.pi
 (goalx,  goaly)  = (13, 5)
 
 
-dstep = np.pi / 10
+dstep = np.pi / 5
 Nmax  = 10000
 
 # arm link lengths
@@ -49,12 +49,12 @@ sphere1 = np.array([1.0, 0.0, 1.0, 0.6])
 sphere2 = np.array([-1.0, 0.0, 1.0, 0.6])
 sphere3 = np.array([0.0, 1.0, 1.0, 0.6])
 sphere4 = np.array([0.0, -1.0, 1.0, 0.6])
-sphere5 = np.array([0.5, 0.5, 1.0, 0.45])
-sphere6 = np.array([-0.5, -0.5, 1.0, 0.45])
-sphere7 = np.array([0.5, -0.5, 1.0, 0.45])
-sphere8 = np.array([-0.5, 0.5, 1.0, 0.45])
-obstacles = [sphere1, sphere2, sphere3, sphere4]
-#obstacles = [sphere1, sphere2, sphere3, sphere4, sphere5, sphere6, sphere7, sphere8]
+sphere5 = np.array([0.5, 0.5, 1.0, 0.3])
+sphere6 = np.array([-0.5, -0.5, 1.0, 0.3])
+sphere7 = np.array([0.5, -0.5, 1.0, 0.3])
+sphere8 = np.array([-0.5, 0.5, 1.0, 0.3])
+# obstacles = [sphere1, sphere2, sphere3, sphere4]
+obstacles = [sphere1, sphere2, sphere3, sphere4, sphere5, sphere6, sphere7, sphere8]
 #obstacles = []
 
 # Pick your start and goal locations (in radians).
