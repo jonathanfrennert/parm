@@ -30,7 +30,7 @@ amin, amax = -np.pi , np.pi
 (goalx,  goaly)  = (13, 5)
 
 
-MAX_STEP = np.pi
+MAX_STEP = 4*np.pi/5
 # Number of obstacles in proximity needed to trigger half the step size
 # ex) 2 => 1/2 MAX; 4 => 1/4 MAX ...
 PROXIMAL_REQ = 2 
@@ -220,7 +220,7 @@ def targetRRT(tree, goalstate, Nmax):
         nextstate = State(nearstate.ts + STEP*d_theta)
         # print(nextstate)
         # Check whether to attach (creating a new node).
-        if nearstate.ConnectsTo(nextstate) and np.all(nearstate.ts != nextstate.ts):
+        if nearstate.ConnectsTo(nextstate) and np.all(np.abs(nearstate.ts - nextstate.ts) > 10**-1):
             nextnode = Node(nextstate, nearnode)
             tree.append(nextnode)
 
@@ -325,7 +325,10 @@ def plan():
 
 def main():
     for i in range(3):
+        start = time.time()
         path = plan()
+        print("Time taken: ", time.time() - start)
+        print()
 
 if __name__== "__main__":
     start = time.time()

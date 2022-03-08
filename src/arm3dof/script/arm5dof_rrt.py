@@ -30,7 +30,7 @@ amin, amax = -np.pi , np.pi
 (goalx,  goaly)  = (13, 5)
 
 
-dstep = np.pi / 5
+dstep = np.pi/5
 Nmax  = 10000
 
 # arm link lengths
@@ -245,7 +245,7 @@ def targetRRT(tree, goalstate, Nmax):
         nextstate = State(nearstate.ts + dstep*d_theta)
         # print(nextstate)
         # Check whether to attach (creating a new node).
-        if nearstate.ConnectsTo(nextstate) and np.all(nearstate.ts != nextstate.ts):
+        if nearstate.ConnectsTo(nextstate) and np.all(np.abs(nearstate.ts - nextstate.ts) > 10**-1):
             nextnode = Node(nextstate, nearnode)
             tree.append(nextnode)
 
@@ -349,9 +349,13 @@ def plan():
     return paths
 
 def main():
-    path = plan()
+    for i in range(10):
+        start = time.time()
+        path = plan()
+        print("Time taken: ", time.time() - start)
+        print()
 
 if __name__== "__main__":
-    start = time.time()
+    # start = time.time()
     main()
-    print("Time taken: ", time.time() - start)
+    # print("Time taken: ", time.time() - start)
