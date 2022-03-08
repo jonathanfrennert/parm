@@ -11,7 +11,7 @@ import numpy as np
 
 from sensor_msgs.msg   import JointState
 
-from arm5dof_rrt import plan
+from arm5dof_rrtz import plan
 
 
 #

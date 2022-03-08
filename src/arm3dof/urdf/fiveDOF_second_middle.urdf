@@ -1,0 +1,525 @@
+<?xml version="1.0"?>
+
+<robot name="threeDOF">
+
+  <!-- *************************************************** -->
+  <!-- ******************** Kinematics ******************* -->
+  <!-- *************************************************** -->
+  <!-- Note the 'origin' tag in the joints defines the
+       shift and reorientation before the continuous joint
+       rotates around the 'axis'. -->
+
+  <link name="world"/>
+
+  <joint name="theta1" type="continuous">
+    <parent link="world"/>
+    <child  link="link1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis   xyz="0 0 1"/>
+  </joint>
+
+
+  <link name="link1"/>
+
+  <joint name="theta2" type="continuous">
+    <parent link="link1"/>
+    <child  link="link2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis   xyz="1 0 0"/>
+  </joint>
+
+
+  <link name="link2"/>
+
+  <joint name="theta3" type="continuous">
+    <parent link="link2"/>
+    <child  link="link3"/>
+    <origin xyz="0 0.333 0" rpy="0 0 0"/>
+    <axis   xyz="1 0 0"/>
+  </joint>
+
+
+  <link name="link3"/>
+
+  <joint name="theta4" type="continuous">
+    <parent link="link3"/>
+    <child  link="link4"/>
+    <origin xyz="0 0.333 0" rpy="0 0 0"/>
+    <axis   xyz="1 0 0"/>
+  </joint>
+
+
+  <link name="link4"/>
+
+  <joint name="theta5" type="continuous">
+    <parent link="link4"/>
+    <child  link="link5"/>
+    <origin xyz="0 1 0" rpy="0 0 0"/>
+    <axis   xyz="1 0 0"/>
+  </joint>
+
+
+  <link name="link5"/>
+
+  <joint name="shifttotip" type="fixed">
+    <parent link="link5"/>
+    <child  link="tip"/>
+    <origin xyz="0 0.333 0" rpy="0 0 0"/>
+  </joint>
+
+
+  <link name="tip"/>
+
+
+  <!-- *************************************************** -->
+  <!-- ********************* Graphics ******************** -->
+  <!-- *************************************************** -->
+  <!-- The following is purely to make this look roboticy. -->
+  <!-- The 'origin' tag in the link/visual defines the
+       center of the object (box, cylinder, sphere, mesh)
+       but does not affect the joint chain kinematics. -->
+
+  <!-- *************** Materials / Colors **************** -->
+
+  <material name="table">    <color rgba="0.85 0.77 0.77 1"/>  </material>
+  <material name="black">    <color rgba="0.00 0.00 0.00 1"/>  </material>
+
+  <material name="red">      <color rgba="1.00 0.00 0.00 1"/>  </material>
+  <material name="green">    <color rgba="0.00 1.00 0.00 1"/>  </material>
+  <material name="blue">     <color rgba="0.00 0.00 1.00 1"/>  </material>
+
+  <material name="magenta">  <color rgba="1.00 0.00 1.00 0.25"/>  </material>
+
+
+  <!-- *** Table - attached to world ***
+
+  <joint name="attach-table" type="fixed">
+    <parent link="world"/>
+    <child  link="table"/>
+  </joint>
+
+  <link name="table">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	<box size="5 5 0.015"/>
+      </geometry>
+      <material name="table"/>
+    </visual>
+  </link>
+
+  -->
+
+  <!-- *** Yaw Motor - attached to world *** -->
+
+  <joint name="attach-yawmotor" type="fixed">
+    <parent link="world"/>
+    <child  link="yawmotor"/>
+  </joint>
+  <link name="yawmotor">
+  </link>
+
+
+  <!-- *** Link 1 Bar - attached to link1 (yaw joint output) *** -->
+
+  <joint name="attach-link1bar" type="fixed">
+    <parent link="link1"/>
+    <child  link="link1bar"/>
+  </joint>
+
+  <link name="link1bar">
+  </link>
+
+
+  <!-- *** Pitch 2 Motor - attached to link1 (yaw joint output) *** -->
+
+  <joint name="attach-pitch2motor" type="fixed">
+    <parent link="link2"/>
+    <child  link="pitch2motor"/>
+  </joint>
+
+  <link name="pitch2motor">
+  </link>
+
+
+  <!-- *** Link 2 Bar - attached to link2 (pitch1 joint output) *** -->
+
+  <joint name="attach-link2bar" type="fixed">
+    <parent link="link2"/>
+    <child  link="link2bar"/>
+  </joint>
+
+  <link name="link2bar">
+    <visual>
+      <origin xyz="0 0.167 0" rpy="-1.5708 0 0"/>
+      <geometry>
+	<cylinder length="0.333" radius="0.015"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+
+  <!-- *** Pitch 3 Motor - attached to link3 (yaw joint output) *** -->
+
+  <joint name="attach-pitch3motor" type="fixed">
+    <parent link="link3"/>
+    <child  link="pitch3motor"/>
+  </joint>
+  <link name="pitch3motor">
+  </link>
+
+
+  <!-- *** Link 3 Bar - attached to link3 (pitch2 joint output) *** -->
+
+  <joint name="attach-link3bar" type="fixed">
+    <parent link="link3"/>
+    <child  link="link3bar"/>
+  </joint>
+
+  <link name="link3bar">
+    <visual>
+      <origin xyz="0 0.167 0" rpy="-1.5708 0 0"/>
+      <geometry>
+	<cylinder length="0.333" radius="0.015"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+
+  <!-- *** Pitch 4 Motor - attached to link1 (yaw joint output) *** -->
+
+  <joint name="attach-pitch4motor" type="fixed">
+    <parent link="link4"/>
+    <child  link="pitch4motor"/>
+  </joint>
+  <link name="pitch4motor">
+  </link>
+
+
+  <!-- *** Link 4 Bar - attached to link3 (pitch2 joint output) *** -->
+
+  <joint name="attach-link4bar" type="fixed">
+    <parent link="link4"/>
+    <child  link="link4bar"/>
+  </joint>
+
+  <link name="link4bar">
+    <visual>
+      <origin xyz="0 0.5 0" rpy="-1.5708 0 0"/>
+      <geometry>
+	<cylinder length="1" radius="0.015"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+
+  <!-- *** Pitch 5 Motor - attached to link1 (yaw joint output) *** -->
+
+  <joint name="attach-pitch5motor" type="fixed">
+    <parent link="link5"/>
+    <child  link="pitch5motor"/>
+  </joint>
+  <link name="pitch5motor">
+  </link>
+
+
+  <!-- *** Link 5 Bar - attached to link3 (pitch2 joint output) *** -->
+
+  <joint name="attach-link5bar" type="fixed">
+    <parent link="link5"/>
+    <child  link="link5bar"/>
+  </joint>
+
+  <link name="link5bar">
+    <visual>
+      <origin xyz="0 0.167 0" rpy="-1.5708 0 0"/>
+      <geometry>
+	<cylinder length="0.333" radius="0.015"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+
+  <!-- *** Tip Ball - attached to tip *** -->
+
+  <joint name="attach-tipball" type="fixed">
+    <parent link="tip"/>
+    <child  link="tipball"/>
+  </joint>
+
+  <link name="tipball">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+      	<sphere radius="0.025"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+
+
+  <!-- *************************************************** -->
+    <!-- ********************* Obstacles ******************* -->
+    <!-- *************************************************** -->
+
+    <joint name="attach-bound" type="fixed">
+      <parent link="world"/>
+      <child  link="bound"/>
+    </joint>
+    <link name="bound">
+      <visual>
+        <origin          xyz="0.0 0.0 1" rpy="0 0 0"/>
+        <geometry> <box size="4 4 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0.0 0.0 1" rpy="0 0 0"/>
+        <geometry> <box size="4 4 2"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-sphere1" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link1"/>
+    </joint>
+    <link name="sphere_link1">
+      <visual>
+        <origin xyz="1 0 1" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.6"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name="attach-sphere2" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link2"/>
+    </joint>
+    <link name="sphere_link2">
+      <visual>
+        <origin xyz="-1 0 1" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.6"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name="attach-sphere3" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link3"/>
+    </joint>
+    <link name="sphere_link3">
+      <visual>
+        <origin xyz="0 1 1" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.6"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name="attach-sphere4" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link4"/>
+    </joint>
+    <link name="sphere_link4">
+      <visual>
+        <origin xyz="0 -1 1" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.6"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name="attach-sphere5" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link5"/>
+    </joint>
+    <link name="sphere_link5">
+      <visual>
+        <origin xyz="0.5 0.5 2" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.45"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name="attach-sphere6" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link6"/>
+    </joint>
+    <link name="sphere_link6">
+      <visual>
+        <origin xyz="0.5 -0.5 2" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.45"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name="attach-sphere7" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link7"/>
+    </joint>
+    <link name="sphere_link7">
+      <visual>
+        <origin xyz="-0.5 0.5 2" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.45"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <joint name="attach-sphere8" type="fixed">
+      <parent link="world"/>
+      <child  link="sphere_link8"/>
+    </joint>
+    <link name="sphere_link8">
+      <visual>
+        <origin xyz="-0.5 -0.5 2" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.45"/>
+        </geometry>
+        <material name="green">
+              <color rgba="0 1 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+
+    <!--<joint name="attach-bottom_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="bottom_wall"/>
+    </joint>
+    <link name="bottom_wall">
+      <visual>
+        <origin          xyz="0 0 0" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 0 0" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-top_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="top_wall"/>
+    </joint>
+    <link name="top_wall">
+      <visual>
+        <origin          xyz="0 0 2" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 0 2" rpy="0 0 0"/>
+        <geometry> <box size="4 4 0"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-x_pos_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="x_pos_wall"/>
+    </joint>
+    <link name="x_pos_wall">
+      <visual>
+        <origin          xyz="2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-x_neg_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="x_neg_wall"/>
+    </joint>
+    <link name="x_neg_wall">
+      <visual>
+        <origin          xyz="-2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="2 0 1" rpy="0 0 0"/>
+        <geometry> <box size="0 4 2"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-y_pos_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="y_pos_wall"/>
+    </joint>
+    <link name="y_pos_wall">
+      <visual>
+        <origin          xyz="0 2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+      </collision>
+    </link>
+
+
+    <joint name="attach-y_neg_wall" type="fixed">
+      <parent link="world"/>
+      <child  link="y_neg_wall"/>
+    </joint>
+    <link name="y_neg_wall">
+      <visual>
+        <origin          xyz="0 -2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+        <material name="magenta"/>
+      </visual>
+      <collision>
+        <origin          xyz="0 -2 1" rpy="0 0 0"/>
+        <geometry> <box size="4 0 2"/> </geometry>
+      </collision>
+    </link>
+    -->
+
+
+</robot>

@@ -33,7 +33,7 @@ amin, amax = -np.pi , np.pi
 MAX_STEP = 4*np.pi/5
 # Number of obstacles in proximity needed to trigger half the step size
 # ex) 2 => 1/2 MAX; 4 => 1/4 MAX ...
-PROXIMAL_REQ = 2 
+PROXIMAL_REQ = 2
 
 # VISUALIZE FOR 0.25, 0.5, 0.75, and 1
 PROXIMAL_RADIUS = 0.75
@@ -198,7 +198,7 @@ def targetRRT(tree, goalstate, Nmax):
         list_vals = [(node.state.Distance(targetstate), node) for node in tree]
         (_, nearnode)  = min(list_vals)
         nearstate = nearnode.state
-        
+
         # Determine the percent of MAX_STEP you should use based on proximity to obstacles
         # Get the distances between obstacles and nearstate
         numProximal = 0
