@@ -245,7 +245,7 @@ def targetRRT(tree, goalstate, Nmax):
         nextstate = State(nearstate.ts + dstep*d_theta)
         # print(nextstate)
         # Check whether to attach (creating a new node).
-        if nearstate.ConnectsTo(nextstate) and np.all(np.abs(nearstate.ts - nextstate.ts) > 10**-6):
+        if nearstate.ConnectsTo(nextstate) and np.all(np.abs(nearstate.ts - nextstate.ts) > 10**-3):
             nextnode = Node(nextstate, nearnode)
             tree.append(nextnode)
 
