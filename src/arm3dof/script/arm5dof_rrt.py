@@ -43,7 +43,6 @@ R = 0.1
 # RRT goal target rate
 RATE = 0.6
 
-
 # Construct the sphere (x, y, z, radius).
 sphere1 = np.array([1.0, 0.0, 1.0, 0.6])
 sphere2 = np.array([-1.0, 0.0, 1.0, 0.6])

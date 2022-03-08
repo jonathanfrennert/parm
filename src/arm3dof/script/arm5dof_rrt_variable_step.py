@@ -35,7 +35,8 @@ MAX_STEP = 4*np.pi/5
 # ex) 2 => 1/2 MAX; 4 => 1/4 MAX ...
 PROXIMAL_REQ = 2 
 
-PROXIMAL_RADIUS = 1
+# VISUALIZE FOR 0.25, 0.5, 0.75, and 1
+PROXIMAL_RADIUS = 0.25
 
 Nmax  = 10000
 
@@ -204,7 +205,6 @@ def targetRRT(tree, goalstate, Nmax):
         for obstacle in obstacles:
             dist = nearstate.distToSphere(obstacle)
             if dist < PROXIMAL_RADIUS:
-                # number of obstacles nearby
                 numProximal += 1
 
         STEP = MAX_STEP*0.5**(numProximal/PROXIMAL_REQ)
@@ -324,7 +324,7 @@ def plan():
     return paths
 
 def main():
-    for i in range(3):
+    for i in range(10):
         start = time.time()
         path = plan()
         print("Time taken: ", time.time() - start)
