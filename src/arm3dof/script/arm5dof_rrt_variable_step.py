@@ -36,7 +36,7 @@ MAX_STEP = 4*np.pi/5
 PROXIMAL_REQ = 2 
 
 # VISUALIZE FOR 0.25, 0.5, 0.75, and 1
-PROXIMAL_RADIUS = 0.25
+PROXIMAL_RADIUS = 0.75
 
 Nmax  = 10000
 
@@ -220,7 +220,7 @@ def targetRRT(tree, goalstate, Nmax):
         nextstate = State(nearstate.ts + STEP*d_theta)
         # print(nextstate)
         # Check whether to attach (creating a new node).
-        if nearstate.ConnectsTo(nextstate) and np.all(np.abs(nearstate.ts - nextstate.ts) > 10**-3):
+        if nearstate.ConnectsTo(nextstate) and not np.all(np.abs(nearstate.ts - nextstate.ts) < 10**-3):
             nextnode = Node(nextstate, nearnode)
             tree.append(nextnode)
 
